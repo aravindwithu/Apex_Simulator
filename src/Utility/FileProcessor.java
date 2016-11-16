@@ -35,57 +35,82 @@ public class FileProcessor {
 		Instruction instruction = null;
 		if(ins != null && ins.length() > 0){
 			instruction = new Instruction();
-			String []ops = ins.split(Constants.OPS_SEPARATOR);
-			instruction.setOpcode(Instruction.getInstructionOpcode(ops[0].trim()));
+			String []ops = ins.split(Constants.separator1);
+			instruction.opcode = Instruction.getInstructionOpcode(ops[0].trim());
 			
-			if(instruction.getOpcode() == INS_OPCODE.HALT){
+			if(instruction.opcode == Constants.HALT){
 				return instruction;
 			}
 			ins = ins.substring(ins.indexOf(" ")+1);
-			String []params = ins.split(Constants.OPS_SEPARATOR);
+			String []params = ins.split(Constants.separator2);
 			
-			if(isLiteral(params)) instruction.setLiteral(true);
-			else instruction.setLiteral(false);
-			
+			if(isLiteral(params)) { 
+				instruction.isLiteral = true;
+			}
+			else {
+				instruction.isLiteral = false;
+			}
 			for(int i=0; i< params.length; ++i){
 				if(params[i].trim().equalsIgnoreCase("X")){
-					params[i] = "R8";
+					params[i] = "R16";
 				}
 			}
 			
-			if(instruction.getOpcode() == INS_OPCODE.STORE && params != null && params.length > 0){
-				if(!instruction.isLiteral()){
-					instruction.setDestAdd(Long.parseLong(params[0].substring(1).trim()));
-					instruction.setSrc1Add(Long.parseLong(params[1].substring(1).trim()));
-					instruction.setSrc2Add(Long.parseLong(params[2].substring(1).trim()));
+			if(instruction.opcode == Constants.STORE && params != null && params.length > 0){
+				if(!instruction.isLiteral){					
+					instruction.src1Add = Long.parseLong(params[0].substring(1).trim());
+					instruction.src2Add = Long.parseLong(params[1].substring(1).trim());
+					instruction.dest = Long.parseLong(params[2].substring(1).trim());
 				} else {
-					instruction.setSrc1Add(Long.parseLong(params[0].substring(1).trim()));
-					instruction.setSrc2Add(Long.parseLong(params[1].substring(1).trim()));
-					instruction.setLiteral(Long.parseLong(params[2].trim()));
+					instruction.src1Add = Long.parseLong(params[0].substring(1).trim());
+					instruction.src2Add = Long.parseLong(params[1].substring(1).trim());
+					instruction.literal = Long.parseLong(params[2].substring(1).trim());
 				}
-			} else if((instruction.getOpcode() == INS_OPCODE.JUMP || instruction.getOpcode() == INS_OPCODE.BAL) && params != null && params.length > 0){
-				instruction.setSrc1Add(Long.parseLong(params[0].substring(1).trim()));
-				instruction.setLiteral(Long.parseLong(params[1]));
-			} else if(instruction.getOpcode() == INS_OPCODE.BZ || instruction.getOpcode() == INS_OPCODE.BNZ){
-				instruction.setSrc1Add(Long.parseLong(params[0].substring(1).trim()));
-				instruction.setLiteral(Long.parseLong(params[1].trim()));
-			} else if(params != null && params.length > 0 && instruction.getOpcode() == INS_OPCODE.MOV){
-				instruction.setDest(Long.parseLong(params[0].trim().substring(1)));
-				instruction.setSrc1Add(Long.parseLong(params[1].trim().substring(1)));
-			} else if(instruction.getOpcode() == INS_OPCODE.HALT){
+			} 
+			
+			else if(instruction.opcode == Constants.LOAD && params != null && params.length > 0){
+				if(!instruction.isLiteral){
+					instruction.dest = Long.parseLong(params[0].substring(1).trim());
+					instruction.src1Add = Long.parseLong(params[1].substring(1).trim());
+					instruction.src2Add = Long.parseLong(params[2].substring(1).trim());
+				} else {
+					instruction.dest = Long.parseLong(params[0].substring(1).trim());
+					instruction.src1Add = Long.parseLong(params[1].substring(1).trim());
+					instruction.literal = Long.parseLong(params[2].substring(1).trim());
+				}
+			} 
+			
+			else if((instruction.opcode == Constants.JUMP || instruction.opcode == Constants.BAL) && params != null && params.length > 0){
+				instruction.src1Add = Long.parseLong(params[0].substring(1).trim());
+				instruction.literal = Long.parseLong(params[1].substring(1).trim());
+			} else if(instruction.opcode == Constants.BZ || instruction.opcode == Constants.BNZ){
+				
+				if(params[0].substring(0).trim() == "R"){
+				instruction.src1Add = Long.parseLong(params[0].substring(1).trim());
+				instruction.literal = Long.parseLong(params[1].substring(1).trim());
+				}
+				else{
+				instruction.literal = Long.parseLong(params[0].substring(1).trim());
+				}
+				
+				
+			} else if(params != null && params.length > 0 && instruction.opcode == Constants.MOV){
+				instruction.dest = Long.parseLong(params[0].trim().substring(1));
+				instruction.src1Add = Long.parseLong(params[1].trim().substring(1));
+			} else if(instruction.opcode == Constants.HALT){
 				
 			} else if(params != null && params.length > 0){
 				for(String param : params){
-					if(param.contains(Constants.REGISTER_PREFIX)){
-						if(instruction.getDest() == null){
-							instruction.setDest(Long.parseLong(param.substring(1).trim()));
-						} else if(instruction.getSrc1Add() == null){
-							instruction.setSrc1Add(Long.parseLong(param.substring(1).trim()));
+					if(param.contains(Constants.regPrefix)){
+						if(instruction.dest == null){
+							instruction.dest = Long.parseLong(param.substring(1).trim());
+						} else if(instruction.src1Add == null){
+							instruction.src1Add = Long.parseLong(param.substring(1).trim());
 						} else {
-							instruction.setSrc2Add(Long.parseLong(param.substring(1).trim()));
+							instruction.src2Add = Long.parseLong(param.substring(1).trim());
 						}
 					}  else {
-						instruction.setLiteral(Long.parseLong(param.trim()));
+						instruction.literal = Long.parseLong(param.substring(1).trim());
 					}
 				}
 			}
@@ -96,7 +121,7 @@ public class FileProcessor {
 	private boolean isLiteral(String []params){
 		boolean result = false;
 		for(String param : params){
-			if(!param.contains(Constants.REGISTER_PREFIX)){
+			if(!param.contains (Constants.regPrefix)){
 				result = true;
 				break;
 			}

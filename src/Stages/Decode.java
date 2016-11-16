@@ -1,24 +1,30 @@
 package Stages;
 
-import Processor.Control;
-import Processor.Latch;
-import Utility.INS_OPCODE;
+import Processor.Processor;
+import Processor.CycleListener;
+import Processor.ProcessListener;
+import Utility.Constants;
+import Utility.Instruction;
 
-public class Decode extends Stage {
+public class Decode implements ProcessListener {
+	
+	public Processor processor;
+	public Instruction instruction;
+	public CycleListener pc;
 	
 	//Latch pc;
 	
-	public Decode(Control control) {
-		pc = new Latch(control);
-		control.addProcessListener(this);
-		this.control = control;
+	public Decode(Processor processor) {
+		pc = new CycleListener(processor);
+		processor.processListeners.add(this);
+		this.processor = processor;
 	}
 
 	public void process() {
-		if(control.isPipelineStalled) return;
+		if(processor.isPipelineStalled){return;}
 		try {
-			instruction = control.getFetch().instruction;
-			pc.write(control.getFetch().pc.read());
+			instruction = processor.fetch.instruction;
+			pc.write(processor.fetch.pc.read());
 			readSources();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -28,25 +34,28 @@ public class Decode extends Stage {
 	public void readSources(){
 			try {
 				if(instruction != null){
-					instruction.setSrc1(instruction.getSrc1Add() != null ? control.getRegister().readReg(instruction.getSrc1Add().intValue()) : null);
-					instruction.setSrc2(instruction.getSrc2Add() != null ? control.getRegister().readReg(instruction.getSrc2Add().intValue()) : null);
-					if(instruction.getOpcode() == INS_OPCODE.STORE && instruction.getDest() == null &&!instruction.isLiteral()){
-						instruction.setDest(control.getRegister().readReg(instruction.getDestAdd().intValue()));
+					instruction.src1 = instruction.src1Add != null ? processor.register.readReg(instruction.src1Add.intValue()) : null;
+					instruction.src2 = instruction.src2Add != null ? processor.register.readReg(instruction.src2Add.intValue()) : null;
+					if(instruction.opcode == Constants.STORE && instruction.dest == null &&!instruction.isLiteral){
+						instruction.dest = processor.register.readReg(instruction.destAdd.intValue());
 					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 	}
-	
-	@Override
+
 	public void clearStage() {
 		pc.write(0);
 		instruction = null;
 	}
 	
+	public CycleListener pcValue(){
+		return pc;
+	}
+	
 	@Override
 	public String toString() {
-		return instruction == null ? INS_OPCODE.STALL.name() : instruction.toString();
+		return instruction == null ? Constants.STALL.name() : instruction.toString();
 	}
 }

@@ -1,48 +1,57 @@
 package Stages;
 
-import Processor.Control;
-import Processor.Latch;
+import Processor.Processor;
+import Processor.CycleListener;
+import Processor.ProcessListener;
 import Utility.Constants;
-import Utility.INS_OPCODE;
+import Utility.Instruction;
 
-public class Fetch extends Stage {
+public class Fetch implements ProcessListener {
+	
+	public Processor processor;
+	public Instruction instruction;
+	public CycleListener pc;
 	
 	//Latch pc;
 	private long nextPc;
 
-	public Fetch(Control control) {
-		this.control = control;
-		pc = new Latch(control);
-		nextPc = Constants.STRT_INST_ADDRESS;
-		control.addProcessListener(this);
+	public Fetch(Processor processor) {
+		this.processor = processor;
+		pc = new CycleListener(processor);
+		nextPc = Constants.startAddress;
+		processor.processListeners.add(this);
 	}
 
 	public void process() {
-		if(control.isPipelineStalled) return;
+		if(processor.isPipelineStalled){return;}
 		
 		pc.write(nextPc);
-		instruction = control.getMemory().getInstruction(nextPc);
+		instruction = processor.memory.getInstruction(nextPc);
 		if(instruction != null)
-			nextPc++;
+			nextPc = nextPc + 4;
 	}
 	
-	@Override
 	public void clearStage() {
-		nextPc = Constants.STRT_INST_ADDRESS;
+		nextPc = Constants.startAddress;
 		instruction = null;
 	}
 	
 	public void clearStage(Long newFetchAdd, boolean isOffset){
+		long a = processor.decode.pc.read();
 		if(isOffset)
-			nextPc = control.getDecode().pc.read() + newFetchAdd;
+			nextPc = processor.decode.pc.read() + newFetchAdd;
 		else
 			nextPc = newFetchAdd;
 		instruction = null;
 	}
 	
+	public CycleListener pcValue(){
+		return pc;
+	}
+	
 	@Override
 	public String toString() {
-		return instruction == null ? INS_OPCODE.STALL.name() : instruction.toString();
+		return instruction == null ? Constants.STALL.name() : instruction.toString();
 	}
 
 }

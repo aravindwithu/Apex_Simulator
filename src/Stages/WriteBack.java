@@ -1,53 +1,62 @@
 package Stages;
 
 import Main.Main;
-import Processor.Control;
-import Processor.Latch;
-import Utility.INS_OPCODE;
+import Processor.Processor;
+import Processor.CycleListener;
+import Processor.ProcessListener;
+import Utility.Constants;
+import Utility.Instruction;
 
-public class WriteBack extends Stage{
+public class WriteBack implements ProcessListener{
+	
+	public Processor processor;
+	public Instruction instruction;
+	public CycleListener pc;
 
 	//Latch pc;
-	Latch result;
+	CycleListener result;
 	
-	public WriteBack(Control control) {
-		pc = new Latch(control);
-		result = new Latch(control);
-		this.control = control;
-		control.addProcessListener(this);
+	public WriteBack(Processor processor) {
+		pc = new CycleListener(processor);
+		result = new CycleListener(processor);
+		this.processor = processor;
+		processor.processListeners.add(this);
 	}
 
 	public void process() {
 		try {
-			instruction = control.getMemoryStage().instruction;
-			pc.write(control.getMemoryStage().pc.read());
+			instruction = processor.memoryStage.instruction;
+			pc.write(processor.memoryStage.pc.read());
 			if(instruction != null){
-				if(instruction.getOpcode() == INS_OPCODE.HALT){
-					control.e.incrementClock();
-					control.getMemory().clearInstructions();
-					control.getMemoryStage().clearStage();
+				if(instruction.opcode == Constants.HALT){
+					++processor.cL.cycle;
+					processor.memory.clearInstructions();
+					processor.memoryStage.clearStage();
 					Main.display();
 					System.err.println("Aborting execution! HALT encountered.");
 					System.exit(0);
-				} else if((instruction.getOpcode().ordinal() < INS_OPCODE.STORE.ordinal() || instruction.getOpcode() == INS_OPCODE.MOV)){
-					control.getRegister().writeReg(instruction.getDest().intValue(), control.getMemoryStage().result.read());
+				} else if((instruction.opcode.ordinal() < Constants.STORE.ordinal() || instruction.opcode == Constants.MOV)){
+					processor.register.writeReg(instruction.dest.intValue(), processor.memoryStage.result.read());
 				}
-				++Control.INS_COUNT;
+				++Processor.INS_COUNT;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
+
 	public void clearStage() {
 		pc.write(0);
 		result.write(0);
 		instruction = null;
 	}
 	
+	public CycleListener pcValue(){
+		return pc;
+	}
+	
 	@Override
 	public String toString() {
-		return instruction == null ? INS_OPCODE.STALL.name() : instruction.toString();
+		return instruction == null ? Constants.STALL.name() : instruction.toString();
 	}
 }

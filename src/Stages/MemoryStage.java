@@ -1,54 +1,74 @@
 package Stages;
 
 import Main.Main;
-import Processor.Control;
-import Processor.Latch;
-import Utility.INS_OPCODE;
+import Processor.Processor;
+import Processor.CycleListener;
+import Processor.ProcessListener;
+import Utility.Constants;
+import Utility.Instruction;
 
-public class MemoryStage extends Stage {
+public class MemoryStage implements ProcessListener {
+	
+	public Processor processor;
+	public Instruction instruction;
+	public CycleListener pc;
 	
 	//Latch pc;
-	Latch result;
+	CycleListener result;
 	
-	public MemoryStage(Control control) {
-		pc = new Latch(control);
-		result = new Latch(control);
-		this.control = control;
-		control.addProcessListener(this);
+	public MemoryStage(Processor processor) {
+		pc = new CycleListener(processor);
+		result = new CycleListener(processor);
+		this.processor = processor;
+		processor.processListeners.add(this);
 	}
 
 	public void process() {
-		try {
-			instruction = control.getExecute().instruction;
-			pc.write(control.getExecute().pc.read());
-			if(instruction != null){
-				if(instruction.getOpcode() == INS_OPCODE.STORE){
-					if(instruction.isLiteral())
-						control.getMemory().writeMem(control.getExecute().result.read().intValue(), instruction.getSrc1());
+		try {			
+			if(processor.fALU2.instruction != null){
+				instruction = processor.fALU2.instruction;
+				pc.write(processor.fALU2.pc.read());
+							
+				if(instruction.opcode == Constants.STORE){
+					if(instruction.isLiteral)
+						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.src1);
 					else
-						control.getMemory().writeMem(control.getExecute().result.read().intValue(), instruction.getDest());
-				} else if(instruction.getOpcode() == INS_OPCODE.LOAD){
-					result.write(control.getMemory().readMem(control.getExecute().result.read().intValue()));
+						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.dest);
+				} else if(instruction.opcode == Constants.LOAD){
+					result.write(processor.memory.readMem(processor.fALU2.result.read().intValue()));
 				} else {				
-					result.write(control.getExecute().result.read());
+					result.write(processor.fALU2.result.read());
 				}
+				
 			}
+			else if(processor.delay.instruction != null){
+				instruction = processor.delay.instruction;
+				pc.write(processor.delay.pc.read());
+			}	
+			else
+			{
+				instruction = null;
+			}
+			
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
-			System.err.println(control.getExecute().pc.read()+"==>"+instruction);
-			Main.displayRegisters();
+			System.err.println(processor.fALU2.pc.read()+"==>"+instruction);
+			//Main.displayRegisters();
 		}
 	}
-	
-	@Override
+
 	public void clearStage() {
 		pc.write(0);
 		result.write(0);
 		instruction = null;
 	}
 	
+	public CycleListener pcValue(){
+		return pc;
+	}
+	
 	@Override
 	public String toString() {
-		return instruction == null ? INS_OPCODE.STALL.name() : instruction.toString();
+		return instruction == null ? Constants.STALL.name() : instruction.toString();
 	}
 }

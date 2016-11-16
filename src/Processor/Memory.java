@@ -7,11 +7,11 @@ import Utility.FileProcessor;
 import Utility.Instruction;
 
 public class Memory {
-	private long []memory = new long[Constants.RAM_SIZE];
+	private long []memory = new long[Constants.memSize];
 	private List<Instruction> instructions;
 	
 	public Memory(String file) {
-		for(int i=0; i < Constants.RAM_SIZE; ++i){
+		for(int i=0; i < Constants.memSize; ++i){
 			memory[i] = 0;
 		}
 		instructions = new FileProcessor(file).fetchInstructions();
@@ -23,65 +23,43 @@ public class Memory {
 	
 	public Instruction getInstruction(long index){
 		Instruction instruction = null;
-		int effectiveAddress = (int) (index-Constants.STRT_INST_ADDRESS);
+		int effectiveAddress = (int) (index-Constants.startAddress);
+		if(effectiveAddress>0)
+		{
+			effectiveAddress = effectiveAddress/4;			
+		}
 		if(instructions.size()>effectiveAddress)
 			instruction = instructions.get(effectiveAddress);
 		return instruction;
 	}
-	
-	/**
-	 * Read single memory location
-	 * @return - data stored 
-	 */
+
 	public long readMem(int index) throws Exception{
-		if(index >= 0 && index < Constants.RAM_SIZE)
+		if(index >= 0 && index < Constants.memSize)
 			return memory[index];
 		else
 			throw new Exception("Illegal memory location, trying to access MEM["+index+"]");
 	}
-	
-	/**
-	 * Writes data value to a specific memory location.
-	 * @param index - memory location to be stored
-	 * @param data -  value to be stored
-	 * @return - data written to index memory location.
-	 * @throws Exception
-	 */
+
 	public long writeMem(int index, long data) throws Exception{
-		if(index >= 0 && index < Constants.RAM_SIZE){
+		if(index >= 0 && index < Constants.memSize){
 			memory[index] = data;
 		} else {
 			throw new Exception("Invalid memory location!!");
 		}
 		return memory[index];
 	}
-	
-	/**
-	 * Read out first 100 memory locations
-	 * @return {@link List} of {@link Long}'s 
-	 */
+
 	public List<Long> readFirst100(){
 		return readMemory(0, 100);
 	}
-	
-	/**
-	 * Reads memory locations beginning from beginIndex till last address of memory
-	 * @param beginIndex
-	 * @return returns list of bytes stored from 
-	 */
-	public List<Long> readMemory(int beginIndex){
-		return readMemory(beginIndex, Constants.RAM_SIZE);
+
+	public List<Long> readMemory(int startIndex){
+		return readMemory(startIndex, Constants.memSize);
 	}
 	
-	/**
-	 * Read memory locations beginning from beginIndex till endIndex (Excluding)
-	 * @param beginIndex
-	 * @param endIndex
-	 * @return return list of bytes read out
-	 */
-	public List<Long> readMemory(int beginIndex, int endIndex){
+	public List<Long> readMemory(int startIndex, int lastIndex){
 		List<Long> data = new ArrayList<Long>();
-		for(int i=beginIndex; i < endIndex; ++i){
+		for(int i=startIndex; i < lastIndex; ++i){
 			data.add(memory[i]);
 		}
 		return data;
