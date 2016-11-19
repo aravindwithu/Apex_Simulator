@@ -1,8 +1,8 @@
 package Stages;
 
-import Processor.Processor;
-import Processor.CycleListener;
-import Processor.ProcessListener;
+import Apex_Simulator.Processor;
+import Apex_Simulator.CycleListener;
+import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -12,8 +12,6 @@ public class Decode implements ProcessListener {
 	public Instruction instruction;
 	public CycleListener pc;
 	
-	//Latch pc;
-	
 	public Decode(Processor processor) {
 		pc = new CycleListener(processor);
 		processor.processListeners.add(this);
@@ -21,12 +19,20 @@ public class Decode implements ProcessListener {
 	}
 
 	public void process() {
-		if(processor.isPipelineStalled){return;}
-		try {
-			instruction = processor.fetch.instruction;
+	try {
+		
+		if(processor.isHalt == true){
+			instruction = null;
+			return;
+		}
+			
+		if(processor.isStalled){return;}
+		
 			pc.write(processor.fetch.pc.read());
-			readSources();
-		} catch (Exception e) {
+			instruction = processor.fetch.instruction;
+			readSources();			
+	} 
+	catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -34,11 +40,23 @@ public class Decode implements ProcessListener {
 	public void readSources(){
 			try {
 				if(instruction != null){
-					instruction.src1 = instruction.src1Add != null ? processor.register.readReg(instruction.src1Add.intValue()) : null;
-					instruction.src2 = instruction.src2Add != null ? processor.register.readReg(instruction.src2Add.intValue()) : null;
-					if(instruction.opcode == Constants.STORE && instruction.dest == null &&!instruction.isLiteral){
-						instruction.dest = processor.register.readReg(instruction.destAdd.intValue());
+					if(instruction.src1Add != null){
+						instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
 					}
+					else{
+						instruction.src1 = null;
+					}
+					
+					if(instruction.src2Add != null){
+						instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
+					}
+					else{
+						instruction.src2 = null;
+					}
+					
+					if(instruction.opCode == Constants.OpCode.STORE && instruction.dest == null && !instruction.isLiteral){
+						instruction.dest = processor.register.readReg(instruction.destAdd.intValue());
+					}					
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -50,12 +68,17 @@ public class Decode implements ProcessListener {
 		instruction = null;
 	}
 	
-	public CycleListener pcValue(){
-		return pc;
+	public Long pcValue(){
+		return pc.read();
 	}
 	
 	@Override
 	public String toString() {
-		return instruction == null ? Constants.STALL.name() : instruction.toString();
+		if(instruction == null){
+			return Constants.OpCode.IDLE.name();
+		}
+		else{
+			return instruction.toString();
+		}
 	}
 }

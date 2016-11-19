@@ -1,8 +1,8 @@
 package Stages;
 
-import Processor.Processor;
-import Processor.CycleListener;
-import Processor.ProcessListener;
+import Apex_Simulator.Processor;
+import Apex_Simulator.CycleListener;
+import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -25,7 +25,46 @@ public class Delay implements ProcessListener{
 	public void process() {		
 		pc.write(processor.branchFU.pc.read());
 		instruction = processor.branchFU.instruction;
-		pc.write(processor.branchFU.pc.read());		
+		
+		if(instruction != null){
+			
+			switch(instruction.opCode.ordinal()){						
+			case 10: //BZ, 							
+				if(processor.isZero){						
+					processor.fetch.clearStage(pc.temRread() + instruction.literal);
+					processor.decode.clearStage();	
+					processor.isBranchZ = false;
+				}
+				else{
+					processor.isBranchZ = false;
+				}
+				break;
+			case 11: //BNZ,			
+				if(!processor.isZero){						
+					processor.fetch.clearStage(pc.temRread() + instruction.literal);
+					processor.decode.clearStage();
+					processor.isBranchZ = false;
+				}
+				else{
+					processor.isBranchZ = false;
+				}
+				break;
+			case 12: //JUMP, 
+				processor.fetch.clearStage(instruction.literal + instruction.src1);
+				processor.decode.clearStage();
+				break;
+			case 13: //BAL, 
+				if(processor.decode.pc != null){
+					processor.register.setReg_X(processor.decode.pc.read());
+					}
+					processor.fetch.clearStage(instruction.src1+instruction.literal);
+					processor.decode.clearStage();
+				break;
+			case 14: //HALT
+				//processor.isHalt = true;
+				break;
+			}
+		}
 	}
 
 	public void clearStage() {
@@ -34,13 +73,18 @@ public class Delay implements ProcessListener{
 		instruction = null;
 	}
 	
-	public CycleListener pcValue(){
-		return pc;
+	public Long pcValue(){
+		return pc.read();
 	}
 	
 	@Override
 	public String toString() {
-		return instruction == null ? Constants.STALL.name() : instruction.toString();
+		if(instruction == null){
+			return Constants.OpCode.IDLE.name();
+		}
+		else{
+			return instruction.toString();
+		}
 	}
 
 }

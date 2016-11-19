@@ -1,8 +1,8 @@
 package Stages;
 
-import Processor.Processor;
-import Processor.CycleListener;
-import Processor.ProcessListener;
+import Apex_Simulator.Processor;
+import Apex_Simulator.CycleListener;
+import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -12,7 +12,6 @@ public class ALU2 implements ProcessListener{
 	public Instruction instruction;
 	public CycleListener pc;
 	
-	//Latch pc;
 	CycleListener result;
 	
 	public ALU2(Processor processor) {
@@ -23,55 +22,52 @@ public class ALU2 implements ProcessListener{
 	}
 	
 	public void process() {
-		processor.isZero = false;
 		pc.write(processor.fALU1.pc.read());
 		instruction = processor.fALU1.instruction;
-		pc.write(processor.fALU1.pc.read());
 		if(instruction != null){			
-			switch(instruction.opcode.ordinal()){
+			switch(instruction.opCode.ordinal()){
 			case 0: //add
 				result.write(instruction.src1+instruction.src2);
 				break;
 			case 1:	//sub
 				result.write(instruction.src1-instruction.src2);
 				break;
-			case 2: //MOVC
-				result.write(instruction.literal);
-				break;
-			case 3: // MUL
+			case 2: // MUL
 				result.write(instruction.src1*instruction.src2);
 				break;
-			case 4: //AND
+			case 3: //MOVC
+				result.write(instruction.literal);
+				break;
+			case 4://MOV
+				result.write(instruction.src1);
+				break;			
+			case 5: //AND
 				result.write(instruction.src1 & instruction.src2);
 				break;
-			case 5:	//OR
+			case 6:	//OR
 				result.write(instruction.src1 | instruction.src2);
 				break;
-			case 6:	//XOR
+			case 7:	//XOR
 				result.write(instruction.src1 ^ instruction.src2);
 				break;
-			case 7: //LOAD
+			case 8: //LOAD
 				if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
 					result.write(instruction.src1 + instruction.src2);
 				} else {								//LOAD rdest, rscr1, literal
 					result.write(instruction.src1 + instruction.literal);
 				}
 				break;
-			case 8: //Store
+			case 9: //Store
 				if(instruction.isLiteral){
 					result.write(instruction.src2 + instruction.literal);}
 				else {
 					result.write(instruction.src1 + instruction.src2);}
-				break;
-			case 13: //HALT, STALL
-				break;
-			case 15://MOV
-				result.write(instruction.src1);
-				break;
+				break;		
 			}
 			
-			if(result.temRread() == 0){
-				processor.isZero = true;}
+			if(result.temRread() == 0 && processor.isBranchZ){
+				processor.isZero = true;
+			}
 		}
 	}
 
@@ -81,13 +77,18 @@ public class ALU2 implements ProcessListener{
 		instruction = null;
 	}
 	
-	public CycleListener pcValue(){
-		return pc;
+	public Long pcValue(){
+		return pc.read();
 	}
 	
 	@Override
 	public String toString() {
-		return instruction == null ? (Constants.STALL.name()+ "          ") : instruction.toString();
+		if(instruction == null){
+			return Constants.OpCode.IDLE.name();
+		}
+		else{
+			return instruction.toString();
+		}
 	}
 
 }

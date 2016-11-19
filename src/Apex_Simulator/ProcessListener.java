@@ -1,6 +1,6 @@
-package Processor;
+package Apex_Simulator;
 
 public interface ProcessListener {
 	public void process();
-	public CycleListener pcValue();
+	public Long pcValue();
 }

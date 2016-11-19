@@ -1,16 +1,12 @@
-package Processor;
+package Apex_Simulator;
 
 public class CycleListener {
 	private long tempResult;
 	private long finalResult;
 	public Integer cycle;
-	
-	public CycleListener(int cycle) {
-		this.cycle = cycle;
-	}
-	
+
 	public CycleListener(Processor processor) {
-		this(0);
+		cycle = 0;
 		processor.cycleListener.add(this);		
 	}
 	

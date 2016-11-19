@@ -1,9 +1,8 @@
 package Stages;
 
-import Main.Main;
-import Processor.Processor;
-import Processor.CycleListener;
-import Processor.ProcessListener;
+import Apex_Simulator.Processor;
+import Apex_Simulator.CycleListener;
+import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -13,7 +12,6 @@ public class MemoryStage implements ProcessListener {
 	public Instruction instruction;
 	public CycleListener pc;
 	
-	//Latch pc;
 	CycleListener result;
 	
 	public MemoryStage(Processor processor) {
@@ -29,12 +27,12 @@ public class MemoryStage implements ProcessListener {
 				instruction = processor.fALU2.instruction;
 				pc.write(processor.fALU2.pc.read());
 							
-				if(instruction.opcode == Constants.STORE){
+				if(instruction.opCode == Constants.OpCode.STORE){
 					if(instruction.isLiteral)
 						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.src1);
 					else
 						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.dest);
-				} else if(instruction.opcode == Constants.LOAD){
+				} else if(instruction.opCode == Constants.OpCode.LOAD){
 					result.write(processor.memory.readMem(processor.fALU2.result.read().intValue()));
 				} else {				
 					result.write(processor.fALU2.result.read());
@@ -63,12 +61,17 @@ public class MemoryStage implements ProcessListener {
 		instruction = null;
 	}
 	
-	public CycleListener pcValue(){
-		return pc;
+	public Long pcValue(){
+		return pc.read();
 	}
 	
 	@Override
 	public String toString() {
-		return instruction == null ? Constants.STALL.name() : instruction.toString();
+		if(instruction == null){
+			return Constants.OpCode.IDLE.name();
+		}
+		else{
+			return instruction.toString();
+		}
 	}
 }

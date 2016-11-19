@@ -1,9 +1,9 @@
 package Stages;
 
-import Main.Main;
-import Processor.Processor;
-import Processor.CycleListener;
-import Processor.ProcessListener;
+import Apex_Simulator.Main;
+import Apex_Simulator.Processor;
+import Apex_Simulator.CycleListener;
+import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -13,7 +13,6 @@ public class WriteBack implements ProcessListener{
 	public Instruction instruction;
 	public CycleListener pc;
 
-	//Latch pc;
 	CycleListener result;
 	
 	public WriteBack(Processor processor) {
@@ -28,14 +27,15 @@ public class WriteBack implements ProcessListener{
 			instruction = processor.memoryStage.instruction;
 			pc.write(processor.memoryStage.pc.read());
 			if(instruction != null){
-				if(instruction.opcode == Constants.HALT){
-					++processor.cL.cycle;
+				if(instruction.opCode == Constants.OpCode.HALT){
+					processor.cL.cycle++;
 					processor.memory.clearInstructions();
 					processor.memoryStage.clearStage();
 					Main.display();
-					System.err.println("Aborting execution! HALT encountered.");
-					System.exit(0);
-				} else if((instruction.opcode.ordinal() < Constants.STORE.ordinal() || instruction.opcode == Constants.MOV)){
+					System.err.println("Aborting execution! HALT encountered."+"\n");
+					processor.isHalt = false;
+					//System.exit(0);
+				} else if((instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal() || instruction.opCode == Constants.OpCode.MOV)){
 					processor.register.writeReg(instruction.dest.intValue(), processor.memoryStage.result.read());
 				}
 				++Processor.INS_COUNT;
@@ -51,12 +51,17 @@ public class WriteBack implements ProcessListener{
 		instruction = null;
 	}
 	
-	public CycleListener pcValue(){
-		return pc;
+	public Long pcValue(){
+		return pc.read();
 	}
 	
 	@Override
 	public String toString() {
-		return instruction == null ? Constants.STALL.name() : instruction.toString();
+		if(instruction == null){
+			return Constants.OpCode.IDLE.name();
+		}
+		else{
+			return instruction.toString();
+		}
 	}
 }

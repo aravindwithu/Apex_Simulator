@@ -1,4 +1,4 @@
-package Processor;
+package Apex_Simulator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +7,11 @@ import Utility.FileProcessor;
 import Utility.Instruction;
 
 public class Memory {
-	private long []memory = new long[Constants.memSize];
+	private long []memory = new long[Constants.MEM_SIZE];
 	private List<Instruction> instructions;
 	
 	public Memory(String file) {
-		for(int i=0; i < Constants.memSize; ++i){
+		for(int i=0; i < Constants.MEM_SIZE; ++i){
 			memory[i] = 0;
 		}
 		instructions = new FileProcessor(file).fetchInstructions();
@@ -23,7 +23,7 @@ public class Memory {
 	
 	public Instruction getInstruction(long index){
 		Instruction instruction = null;
-		int effectiveAddress = (int) (index-Constants.startAddress);
+		int effectiveAddress = (int) (index-Constants.START_ADDRESS);
 		if(effectiveAddress>0)
 		{
 			effectiveAddress = effectiveAddress/4;			
@@ -34,14 +34,14 @@ public class Memory {
 	}
 
 	public long readMem(int index) throws Exception{
-		if(index >= 0 && index < Constants.memSize)
+		if(index >= 0 && index < Constants.MEM_SIZE)
 			return memory[index];
 		else
 			throw new Exception("Illegal memory location, trying to access MEM["+index+"]");
 	}
 
 	public long writeMem(int index, long data) throws Exception{
-		if(index >= 0 && index < Constants.memSize){
+		if(index >= 0 && index < Constants.MEM_SIZE){
 			memory[index] = data;
 		} else {
 			throw new Exception("Invalid memory location!!");
@@ -54,7 +54,7 @@ public class Memory {
 	}
 
 	public List<Long> readMemory(int startIndex){
-		return readMemory(startIndex, Constants.memSize);
+		return readMemory(startIndex, Constants.MEM_SIZE);
 	}
 	
 	public List<Long> readMemory(int startIndex, int lastIndex){
