@@ -1,6 +1,6 @@
 package Stages;
 
-import Apex_Simulator.Main;
+import Apex_Simulator.Apex_Simulator;
 import Apex_Simulator.Processor;
 import Apex_Simulator.CycleListener;
 import Apex_Simulator.ProcessListener;
@@ -40,7 +40,7 @@ public class WriteBack implements ProcessListener{
 					processor.cL.cycle++;
 					processor.memory.clearInstructions();
 					processor.memoryStage.clearStage();
-					Main.display();
+					Apex_Simulator.display();
 					System.out.println("Aborting execution! HALT encountered.");
 					processor.isHalt = false;
 					//System.exit(0);

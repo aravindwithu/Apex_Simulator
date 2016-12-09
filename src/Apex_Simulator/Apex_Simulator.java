@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 import Utility.Constants;
 
-public class Main {
+public class Apex_Simulator {
 	private static Processor processor;
 	private static String INS_FILE;
 	
