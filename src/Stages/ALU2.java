@@ -14,6 +14,10 @@ public class ALU2 implements ProcessListener{
 	
 	CycleListener result;
 	
+	/**
+	 * Constructor for ALU2 stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * @param processor a Processor object.
+	 */
 	public ALU2(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
@@ -21,10 +25,20 @@ public class ALU2 implements ProcessListener{
 		processor.processListeners.add(this);
 	}
 	
+	/**
+	 * ALU2 process method performs relevant operations such as register-register (add, sub, .. etc), load, and store and 
+	 * writes the result to the destination register temporarily. 
+	 * Register-to-register instructions: ADD, SUB, MOVC, MUL, AND, OR, EX-OR (all done on the Integer ALU in two cycles(2nd cycle here)). 
+	 * You can assume that the result of multiplying two registers will fit into a single register.
+	 */
 	public void process() {
 		pc.write(processor.fALU1.pc.read());
 		instruction = processor.fALU1.instruction;
-		if(instruction != null){			
+		if(instruction != null){	
+			
+			
+			
+			
 			switch(instruction.opCode.ordinal()){
 			case 0: //add
 				result.write(instruction.src1+instruction.src2);
@@ -71,16 +85,27 @@ public class ALU2 implements ProcessListener{
 		}
 	}
 
+	/**
+	 * clearStage method clears the ALU2 stage.
+	 */
 	public void clearStage() {
 		pc.write(0);
 		result.write(0);
 		instruction = null;
 	}
 	
+	/**
+	 * pcValue method returns the pc Value(instruction address) of the ALU2 stage.
+	 * @return long value of the pc Value(instruction address)
+	 */
 	public Long pcValue(){
 		return pc.read();
 	}
 	
+	/**
+	 * toString method returns the instruction currently in ALU2 as string if instruction is not null or returns the IDLE constants.
+	 * @return String of the instruction or IDLE constants
+	 */
 	@Override
 	public String toString() {
 		if(instruction == null){

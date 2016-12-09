@@ -2,12 +2,18 @@ package Utility;
 
 public class Constants {
 	
+	/**
+	 * OpCode enum contains operation codes of different instructions.
+	 */
 	public enum OpCode{
 		ADD, SUB, MUL, MOVC, MOV, AND, OR, EXOR, LOAD, STORE, BZ, BNZ, JUMP, BAL, HALT, IDLE
 	}
 	
+	/**
+	 * Stage enum contains Stage constants of different instructions.
+	 */
 	public enum Stage{
-		FETCH, DECODE, ALU1,  BRANCHFU, ALU2, DELAY, MEMORYSTAGE, WRITEBACK
+		FETCH, DECODE, ALU1,  BRANCHFU, ALU2, DELAY, MEMORYSTAGE, WRITEBACK, EMPTY
 	}
 	
 	public static final String REG_PREFIX = "R";

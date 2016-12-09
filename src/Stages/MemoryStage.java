@@ -14,6 +14,10 @@ public class MemoryStage implements ProcessListener {
 	
 	CycleListener result;
 	
+	/**
+	 * Constructor for Memory stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * @param processor a Processor object.
+	 */
 	public MemoryStage(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
@@ -21,6 +25,10 @@ public class MemoryStage implements ProcessListener {
 		processor.processListeners.add(this);
 	}
 
+	/**
+	 * MemoryStage process method performs the memory operations for LOAD and STORE.
+	 * fetches data from memory for LOAD and writes data to memory for STORE. 
+	 */
 	public void process() {
 		try {			
 			if(processor.fALU2.instruction != null){
@@ -28,10 +36,16 @@ public class MemoryStage implements ProcessListener {
 				pc.write(processor.fALU2.pc.read());
 							
 				if(instruction.opCode == Constants.OpCode.STORE){
-					if(instruction.isLiteral)
+					
+					if(instruction.isLiteral){
+						instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
 						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.src1);
-					else
+						}
+					else{
 						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.dest);
+					}
+					
+					
 				} else if(instruction.opCode == Constants.OpCode.LOAD){
 					result.write(processor.memory.readMem(processor.fALU2.result.read().intValue()));
 				} else {				
@@ -55,16 +69,27 @@ public class MemoryStage implements ProcessListener {
 		}
 	}
 
+	/**
+	 * clearStage method clears the Memory stage.
+	 */
 	public void clearStage() {
 		pc.write(0);
 		result.write(0);
 		instruction = null;
 	}
 	
+	/**
+	 * pcValue method returns the pc Value(instruction address) of the Memory stage.
+	 * @return long value of the pc Value(instruction address)
+	 */
 	public Long pcValue(){
 		return pc.read();
 	}
 	
+	/**
+	 * toString method returns the instruction currently in Memory as string if instruction is not null or returns the IDLE constants.
+	 * @return String of the instruction or IDLE constants
+	 */
 	@Override
 	public String toString() {
 		if(instruction == null){

@@ -15,6 +15,10 @@ public class WriteBack implements ProcessListener{
 
 	CycleListener result;
 	
+	/**
+	 * Constructor for Write Back stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * @param processor a Processor object.
+	 */
 	public WriteBack(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
@@ -22,6 +26,11 @@ public class WriteBack implements ProcessListener{
 		processor.processListeners.add(this);
 	}
 
+	/**
+	 * WriteBack process method performs the register write operations.
+	 * The registers are written when the instruction enters the write back stage in same cycle. 
+	 * Aborts the simulation when HALT instruction is encountered.
+	 */
 	public void process() {
 		try {
 			instruction = processor.memoryStage.instruction;
@@ -32,7 +41,7 @@ public class WriteBack implements ProcessListener{
 					processor.memory.clearInstructions();
 					processor.memoryStage.clearStage();
 					Main.display();
-					System.err.println("Aborting execution! HALT encountered."+"\n");
+					System.out.println("Aborting execution! HALT encountered.");
 					processor.isHalt = false;
 					//System.exit(0);
 				} else if((instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal() || instruction.opCode == Constants.OpCode.MOV)){
@@ -45,16 +54,27 @@ public class WriteBack implements ProcessListener{
 		}
 	}
 
+	/**
+	 * clearStage method clears the WriteBack stage.
+	 */
 	public void clearStage() {
 		pc.write(0);
 		result.write(0);
 		instruction = null;
 	}
 	
+	/**
+	 * pcValue method returns the pc Value(instruction address) of the WriteBack stage.
+	 * @return long value of the pc Value(instruction address)
+	 */
 	public Long pcValue(){
 		return pc.read();
 	}
 	
+	/**
+	 * toString method returns the instruction currently in WriteBack as string if instruction is not null or returns the IDLE constants.
+	 * @return String of the instruction or IDLE constants
+	 */
 	@Override
 	public String toString() {
 		if(instruction == null){

@@ -15,6 +15,10 @@ public class Delay implements ProcessListener{
 	//Latch pc;
 	CycleListener result;
 
+	/**
+	 * Constructor for Delay stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * @param processor a Processor object.
+	 */
 	public Delay(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
@@ -22,6 +26,9 @@ public class Delay implements ProcessListener{
 		processor.processListeners.add(this);
 	}
 	
+	/**
+	 * Delay process method acts as an one cycle delay for the Branch FU stage. 
+	 */
 	public void process() {		
 		pc.write(processor.branchFU.pc.read());
 		instruction = processor.branchFU.instruction;
@@ -67,16 +74,27 @@ public class Delay implements ProcessListener{
 		}
 	}
 
+	/**
+	 * clearStage method clears the Delay stage.
+	 */
 	public void clearStage() {
 		pc.write(0);
 		result.write(0);
 		instruction = null;
 	}
 	
+	/**
+	 * pcValue method returns the pc Value(instruction address) of the Delay stage.
+	 * @return long value of the pc Value(instruction address)
+	 */
 	public Long pcValue(){
 		return pc.read();
 	}
 	
+	/**
+	 * toString method returns the instruction currently in Delay as string if instruction is not null or returns the IDLE constants.
+	 * @return String of the instruction or IDLE constants
+	 */
 	@Override
 	public String toString() {
 		if(instruction == null){

@@ -12,19 +12,26 @@ public class Decode implements ProcessListener {
 	public Instruction instruction;
 	public CycleListener pc;
 	
+	/**
+	 * Constructor for Decode stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * @param processor a Processor object.
+	 */
 	public Decode(Processor processor) {
 		pc = new CycleListener(processor);
 		processor.processListeners.add(this);
 		this.processor = processor;
 	}
 
+	/**
+	 * Decode process method performs relevant action for halt, stall and decodes the necessary instruction. 
+	 */
 	public void process() {
 	try {
 		
 		if(processor.isHalt == true){
 			instruction = null;
 			return;
-		}
+		}	
 			
 		if(processor.isStalled){return;}
 		
@@ -37,6 +44,9 @@ public class Decode implements ProcessListener {
 		}
 	}
 	
+	/**
+	 * ReadSources method reads the source registers of the instruction and fetches the same from register file. 
+	 */
 	public void readSources(){
 			try {
 				if(instruction != null){
@@ -63,15 +73,26 @@ public class Decode implements ProcessListener {
 			}
 	}
 
+	/**
+	 * clearStage method clears the Decode stage.
+	 */
 	public void clearStage() {
 		pc.write(0);
 		instruction = null;
 	}
 	
+	/**
+	 * pcValue method returns the pc Value(instruction address) of the Decode stage.
+	 * @return long value of the pc Value(instruction address)
+	 */
 	public Long pcValue(){
 		return pc.read();
 	}
 	
+	/**
+	 * toString method returns the instruction currently in Decode as string if instruction is not null or returns the IDLE constants.
+	 * @return String of the instruction or IDLE constants
+	 */	
 	@Override
 	public String toString() {
 		if(instruction == null){

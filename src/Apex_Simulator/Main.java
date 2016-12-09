@@ -7,6 +7,11 @@ import Utility.Constants;
 public class Main {
 	private static Processor processor;
 	private static String INS_FILE;
+	
+	/**
+	 * main method gets instruction file and initiate the apex simulator program and calls the process method,
+	 * @param  args instruction text file is the 1st argument
+	 */
 	public static void main(String[] args) {
 		if(args.length > 0){
 			INS_FILE = args[0];
@@ -16,6 +21,9 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * process method - using scanner class reads the input to initialize,simulate,display or exit and process the relevant execution
+	 */
 	static void process(){
 		Scanner in = new Scanner(System.in);
 		while(true){			
@@ -36,7 +44,7 @@ public class Main {
 					}					
 				} 
 				catch (Exception e){
-					System.err.println("Please enter correct number of cycles.");
+					System.out.println("Please enter correct number of cycles.");
 				}
 				
 			} 
@@ -45,11 +53,15 @@ public class Main {
 				break;
 			}
 			else{
-				System.err.println("Please enter correct command.");
+				System.out.println("Please enter correct command.");
 			}
 		}
 	}
 	
+	/**
+	 * formatDisp method gets stage constants and format the relevant display information for given stage
+	 * @param  stage of type Constants.Stage
+	 */
 	public static String formatDisp(Constants.Stage stage){
 		String pcStr = "0";
 		String stageStr = "";
@@ -124,6 +136,9 @@ public class Main {
 		
 	}
 	
+	/**
+	 * display method displays the status of last simulation(displays each stage,reg & mem informations)
+	 */
 	public static void display(){
 		//displayPipeline
 		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");

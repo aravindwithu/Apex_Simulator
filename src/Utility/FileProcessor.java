@@ -9,10 +9,18 @@ import java.util.List;
 
 public class FileProcessor {
 	private File file;
+	
+	/**
+	 * Constructor for FileProcessor initializes file object with relevant instruction file.
+	 * @param fileName a instruction file set in string format.
+	 */
 	public FileProcessor(String fileName) {
 		file = new File(fileName);
 	}
 
+	/**
+	 * fetchInstructions method process the file object and stores the instructions in array format in a instruction array list.
+	 */
 	public List<Instruction> fetchInstructions(){
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		List<String> fileData = readFile();
@@ -23,6 +31,10 @@ public class FileProcessor {
 		return instructions;
 	}
 	
+	/**
+	 * parseLine method parse the each instruction and returns it to the fetchInstructions method.
+	 * sets the opcode and register identification fields in instruction class.
+	 */
 	private Instruction parseLine(String ins){
 		Instruction instruction = null;
 		if(ins != null && ins.length() > 0){
@@ -110,6 +122,11 @@ public class FileProcessor {
 		return instruction;
 	}
 	
+	/**
+	 * isLiteral method checks whether a instruction contains literal values or not
+	 * @param params string array of a single instruction(opcodes, registers and literals if any)
+	 * @return boolean value
+	 */
 	private boolean isLiteral(String []params){
 		boolean result = false;
 		for(String param : params){
@@ -121,6 +138,9 @@ public class FileProcessor {
 		return result;
 	}
 	
+	/**
+	 * readFile method stores the instructions in array list from file using buffered reader.
+	 */
 	private List<String> readFile(){
 		List<String> instructions = new ArrayList<String>();
 		BufferedReader br = null;
