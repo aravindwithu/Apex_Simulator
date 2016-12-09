@@ -13,8 +13,6 @@ public class BranchFU implements ProcessListener{
 	public CycleListener pc;
 	//Latch pc;
 	CycleListener result;
-	
-	private boolean isStalled;
 
 	/**
 	 * Constructor for BranchFU stage initializes PC(instruction Address), result(like a latch which has results of the stage).
@@ -44,36 +42,36 @@ public class BranchFU implements ProcessListener{
 			if(instruction != null && instruction.opCode.ordinal() < 10){
 				instruction = null;
 				return;			
-			}		
+			}	
 			
-			if(instruction != null){
-				 if(instruction.src1Stall && instruction.src2Stall){
-					  isStalled = true;
-				  }
-			}
-			
+			if(processor.isStalled){
+				instruction = null;
+				return;									
+		}
+						
 			processor.decode.readSources();	
 			
-			if(isStalled && instruction != null){
-				if(instruction.src1 != null || instruction.src2 != null){
+			if(instruction != null){			
+				
+				if(instruction.src1 != null){
 					
-					if(instruction.src1Add!=null && processor.writeBack.instruction != null  && processor.writeBack.instruction.dest != null
+					if(instruction.src1Add!=null && processor.writeBack.instruction != null  
+							&& processor.writeBack.instruction.dest != null
 						   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){
 					   instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-					   isStalled = false;
-					}					
-					if(instruction.src1Add!=null && processor.memoryStage.instruction != null  && processor.memoryStage.instruction.dest != null
+					   processor.isStalled = false;
+					}		
+					
+					if(instruction.src1Add!=null && processor.memoryStage.instruction != null  
+							&& processor.memoryStage.instruction.dest != null
 						   && processor.memoryStage.instruction.dest.intValue() == instruction.src1Add){
 					   instruction.src1 = processor.memoryStage.result.temRread();
-					   isStalled = false;
+					   processor.isStalled = false;
 					}	
-			   }		
+			   }
 			}
 						
-			if(isStalled){
-					instruction = null;
-					return;									
-			}
+			
 					
 			if(instruction!=null && instruction.opCode == Constants.OpCode.HALT){				
 				processor.isHalt = true;				

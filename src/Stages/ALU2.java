@@ -35,11 +35,7 @@ public class ALU2 implements ProcessListener{
 		pc.write(processor.fALU1.pc.read());
 		instruction = processor.fALU1.instruction;
 		if(instruction != null){	
-			
-			
-			
-			
-			switch(instruction.opCode.ordinal()){
+		   switch(instruction.opCode.ordinal()){
 			case 0: //add
 				result.write(instruction.src1+instruction.src2);
 				break;
