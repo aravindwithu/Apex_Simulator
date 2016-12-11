@@ -25,7 +25,7 @@ public class Fetch implements ProcessListener {
 		processor.processListeners.add(this);
 	}
 
-	/**
+	/** //false checkin ALU1
 	 * Fetch process method fetches the next instruction by instruction address from the instructions aray list - get instruction method 
 	 * which process the instruction array list .
 	 */
@@ -35,17 +35,11 @@ public class Fetch implements ProcessListener {
 			instruction = null;
 			return;
 		}
-		
-			
-		if(processor.isStalled){
-			return;
-			}	
-			pc.write(nextPc);
-		
+		//if(processor.isStalled){return;}			
+		pc.write(nextPc);
 		instruction = processor.memory.getInstruction(nextPc);
 		if(instruction != null){
-					nextPc = nextPc + 4;
-		}
+			nextPc = nextPc + 4;}		
 	}
 	
 	/**

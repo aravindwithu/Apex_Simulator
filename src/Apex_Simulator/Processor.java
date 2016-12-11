@@ -1,14 +1,26 @@
 package Apex_Simulator;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import Stages.*;
+import java.util.Queue;
+
+
+
+import Stages.Decode;
+import Stages.Dispatch;
+import Stages.ALU1;
+import Stages.ALU2;
+import Stages.BranchFU;
+import Stages.Delay;
+import Stages.Fetch;
+import Stages.MemoryStage;
+import Stages.WriteBack;
 import Utility.Constants;
+import Utility.Instruction;
 
 public class Processor {	
 	public static int INS_COUNT;	
-	public static int mulCount = 0;
-	public boolean mulResultFoundCheck = false;
 	public Memory memory;
 	public UnifiedRegisterFile register;
 	public CycleListener cL;
@@ -18,10 +30,8 @@ public class Processor {
 	public ALU1 fALU1;
 	public ALU2 fALU2;
 	public BranchFU branchFU;
-	public MultiplicationFU multiplicationFU; 
 	public Delay delay;
 	public MemoryStage memoryStage;
-	public LSFU lSFU;
 	public WriteBack writeBack;
 	public IQ IQEntry;
 	public ROB ROBEntry;	
@@ -42,12 +52,10 @@ public class Processor {
 		IQEntry = new IQ();
 		ROBEntry = new ROB();
 		writeBack = new WriteBack(this);
-		//memoryStage = new MemoryStage(this);
-		//delay = new Delay(this);
-		lSFU = new LSFU(this);
+		memoryStage = new MemoryStage(this);
+		delay = new Delay(this);
 		fALU2 = new ALU2(this);
 		branchFU = new BranchFU(this);
-		multiplicationFU = new MultiplicationFU(this);
 		fALU1 = new ALU1(this);	
 		dispatch = new Dispatch(this);
 		decode = new Decode(this);
@@ -78,71 +86,86 @@ public class Processor {
 		
 		cL.cycle++;
 		isStalled = false;
-		if(decode.instruction !=null){
-		decode.instruction.stallIn = Constants.Stage.EMPTY;
-		decode.instruction.src1FwdValIn = Constants.Stage.EMPTY;
-		decode.instruction.src2FwdValIn = Constants.Stage.EMPTY;
-		decode.instruction.src1Stall = false;
-		decode.instruction.src2Stall = false;
+		Instruction chkInds= null;
+		/*if(decode.instruction !=null){
+			chkInds = decode.instruction;}*/
 		
-			if(memoryStage.instruction != null && decode.instruction != null && memoryStage.instruction.dest != null
-					&& (decode.instruction.src1Add == memoryStage.instruction.dest || decode.instruction.src2Add == memoryStage.instruction.dest))
-			{
-				if(decode.instruction.src1Add == memoryStage.instruction.dest
-						&& decode.instruction.opCode != Constants.OpCode.STORE){					
-					decode.instruction.src1FwdValIn = Constants.Stage.LSFU;					
-					}
-				if(decode.instruction.src2Add == memoryStage.instruction.dest){					
-					decode.instruction.src2FwdValIn = Constants.Stage.LSFU;					
-					}			
+		int countIQ = Constants.IQ_COUNT;
+		for(int i=0; i < countIQ; i++){
+			try{ //false checkin ALU1
+				if( this.IQEntry.readIQEntry(i).opCode != null){
+					chkInds = this.IQEntry.readIQEntry(i);
+				}
+				else{break;}
 			}
-			
-			if(fALU2.instruction != null && decode.instruction != null && fALU2.instruction.dest != null
-					&& (decode.instruction.src1Add == fALU2.instruction.dest || decode.instruction.src2Add == fALU2.instruction.dest))
-			{			
-				if(decode.instruction.src1Add == fALU2.instruction.dest 
-						&& decode.instruction.opCode != Constants.OpCode.STORE){					
-					decode.instruction.src1FwdValIn = Constants.Stage.ALU2;					
-					}
-				if(decode.instruction.src2Add == fALU2.instruction.dest){					
-					decode.instruction.src2FwdValIn = Constants.Stage.ALU2;					
-					}				
+			catch (Exception e) {
+				e.printStackTrace();
 			}
+			if(chkInds !=null){
+				chkInds.stallIn = Constants.Stage.EMPTY;
+				chkInds.src1FwdValIn = Constants.Stage.EMPTY;
+				chkInds.src2FwdValIn = Constants.Stage.EMPTY;
+				chkInds.src1Stall = false;
+				chkInds.src2Stall = false;
 			
-			if(fALU1.instruction != null && decode.instruction != null && fALU1.instruction.dest != null)
-			{			
-				if(decode.instruction.src1Add == fALU1.instruction.dest
-						&& decode.instruction.opCode != Constants.OpCode.STORE){
-					isStalled = true;									
-					decode.instruction.src1Stall = true;
-					}
-				if(decode.instruction.src2Add == fALU1.instruction.dest){
-					isStalled = true;					
-					decode.instruction.src2Stall = true;
-					}			
-			}
-			
-			if(fALU2.instruction != null && decode.instruction != null && fALU2.instruction.dest != null 
-					&& fALU2.instruction.opCode == Constants.OpCode.LOAD)
-			{			
-				if(decode.instruction.src1Add == fALU2.instruction.dest
-						&& decode.instruction.opCode != Constants.OpCode.STORE){
-					isStalled = true;									
-					decode.instruction.src1Stall = true;
-					}
-				if(decode.instruction.src2Add == fALU2.instruction.dest){
-					isStalled = true;					
-					decode.instruction.src2Stall = true;
-					}			
-			}	
-			
-			if(decode.instruction != null && (decode.instruction.opCode == Constants.OpCode.BZ || decode.instruction.opCode == Constants.OpCode.BNZ)
-					&& !isBranchZ){
-				isStalled = true;	
-				isZero = false;
-				isBranchZ = true;
-			}
+				if(memoryStage.instruction != null && chkInds != null && memoryStage.instruction.dest != null
+						&& (chkInds.src1Add == memoryStage.instruction.dest || chkInds.src2Add == memoryStage.instruction.dest))
+				{
+					if(chkInds.src1Add == memoryStage.instruction.dest
+							&& chkInds.opCode != Constants.OpCode.STORE){					
+						chkInds.src1FwdValIn = Constants.Stage.MEMORYSTAGE;					
+						}
+					if(chkInds.src2Add == memoryStage.instruction.dest){					
+						chkInds.src2FwdValIn = Constants.Stage.MEMORYSTAGE;					
+						}			
+				}
+				
+				if(fALU2.instruction != null && chkInds != null && fALU2.instruction.dest != null
+						&& (chkInds.src1Add == fALU2.instruction.dest || chkInds.src2Add == fALU2.instruction.dest))
+				{			
+					if(chkInds.src1Add == fALU2.instruction.dest 
+							&& chkInds.opCode != Constants.OpCode.STORE){					
+						chkInds.src1FwdValIn = Constants.Stage.ALU2;					
+						}
+					if(chkInds.src2Add == fALU2.instruction.dest){					
+						chkInds.src2FwdValIn = Constants.Stage.ALU2;					
+						}				
+				}
+				
+				if(fALU1.instruction != null && chkInds != null && fALU1.instruction.dest != null)
+				{			
+					if(chkInds.src1Add == fALU1.instruction.dest
+							&& chkInds.opCode != Constants.OpCode.STORE){
+						isStalled = true;									
+						chkInds.src1Stall = true;
+						}
+					if(chkInds.src2Add == fALU1.instruction.dest){
+						isStalled = true;					
+						chkInds.src2Stall = true;
+						}			
+				}
+				
+				if(fALU2.instruction != null && chkInds != null && fALU2.instruction.dest != null 
+						&& fALU2.instruction.opCode == Constants.OpCode.LOAD)
+				{			
+					if(chkInds.src1Add == fALU2.instruction.dest
+							&& chkInds.opCode != Constants.OpCode.STORE){
+						isStalled = true;									
+						chkInds.src1Stall = true;
+						}
+					if(chkInds.src2Add == fALU2.instruction.dest){
+						isStalled = true;					
+						chkInds.src2Stall = true;
+						}			
+				}	
+				
+				if(chkInds != null && (chkInds.opCode == Constants.OpCode.BZ || chkInds.opCode == Constants.OpCode.BNZ)
+						&& !isBranchZ){
+					isStalled = true;	
+					isZero = false;
+					isBranchZ = true;
+				}
+			}		
 		}
-
 	}
 }

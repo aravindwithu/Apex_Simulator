@@ -21,7 +21,7 @@ public class Apex_Simulator {
 		}
 	}
 	
-	/**
+	/** //false checkin ALU1
 	 * process method - using scanner class reads the input to initialize,simulate,display or exit and process the relevant execution
 	 */
 	static void process(){
@@ -39,7 +39,7 @@ public class Apex_Simulator {
 			else if(command.contains(Constants.SIMULATE) || command.contains("s")){
 				try{
 					int n  = Integer.parseInt(command.split(" ")[1].trim());					
-					for(int i=0; i<n; i++){					
+					for(int i=0; i<n; i++){						
 							processor.doProcess();
 					}					
 				} 
@@ -82,41 +82,48 @@ public class Apex_Simulator {
 			state = processor.decode.toString();
 			break;
 		case 2:
+			stageStr ="Dispatch Stage";
+			if(processor.dispatch.instruction != null){
+				pcStr = Long.toString(processor.dispatch.pc.read());				
+				}	
+			state = processor.dispatch.toString();
+			break;
+		case 3:
 			stageStr ="ALU1 Stage";
 			if(processor.fALU1.instruction != null){				
 				pcStr = Long.toString(processor.fALU1.pc.read());
 				}		
 			state = processor.fALU1.toString();
 			break;
-		case 3:
+		case 4:
 			stageStr ="BranchFU Stage";
 			if(processor.branchFU.instruction != null){				
 				pcStr = Long.toString(processor.branchFU.pc.read());				
 				}	
 			state = processor.branchFU.toString();
 			break;
-		case 4:
+		case 5:
 			stageStr ="ALU2 Stage";
 			if(processor.fALU2.instruction != null){				
 				pcStr = Long.toString(processor.fALU2.pc.read());				
 				}		
 			state = processor.fALU2.toString();
 			break;
-		case 5:
-			stageStr ="MULFU Stage";
-			if(processor.multiplicationFU.instruction != null){
-				pcStr = Long.toString(processor.multiplicationFU.pc.read());
-				}	
-			state = processor.multiplicationFU.toString();
-			break;
 		case 6:
-			stageStr ="LSFU Stage";
-			if(processor.lSFU.instruction != null){
-				pcStr = Long.toString(processor.lSFU.pc.read());
-				}
-			state = processor.lSFU.toString();
+			stageStr ="Delay Stage";
+			if(processor.delay.instruction != null){
+				pcStr = Long.toString(processor.delay.pc.read());
+				}	
+			state = processor.delay.toString();
 			break;
 		case 7:
+			stageStr ="Memory Stage";
+			if(processor.memoryStage.instruction != null){
+				pcStr = Long.toString(processor.memoryStage.pc.read());
+				}
+			state = processor.memoryStage.toString();
+			break;
+		case 8:
 			stageStr ="WriteBack Stage";
 			if(processor.writeBack.instruction != null){				
 				pcStr = Long.toString(processor.writeBack.pc.read());				
@@ -144,12 +151,13 @@ public class Apex_Simulator {
 		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
 		System.out.println("Clock cycles : "+processor.cL.cycle);
 		System.out.println(formatDisp(Constants.Stage.FETCH));
-		System.out.println(formatDisp(Constants.Stage.DECODE)+"\n");
+		System.out.println(formatDisp(Constants.Stage.DECODE));
+		System.out.println(formatDisp(Constants.Stage.DISPATCH)+"\n");
 		System.out.print(formatDisp(Constants.Stage.ALU1));
 		System.out.println(formatDisp(Constants.Stage.BRANCHFU));
-		System.out.println(formatDisp(Constants.Stage.ALU2));
-		System.out.println(formatDisp(Constants.Stage.MULFU)+"\n");
-		System.out.println(formatDisp(Constants.Stage.LSFU));
+		System.out.print(formatDisp(Constants.Stage.ALU2));
+		System.out.println(formatDisp(Constants.Stage.DELAY)+"\n");
+		System.out.println(formatDisp(Constants.Stage.MEMORYSTAGE));
 		System.out.println(formatDisp(Constants.Stage.WRITEBACK));
 		
 		

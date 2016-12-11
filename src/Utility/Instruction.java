@@ -16,9 +16,11 @@ public class Instruction {
 	public Constants.Stage stallIn = Constants.Stage.EMPTY;
 	public Constants.Stage src1FwdValIn = Constants.Stage.EMPTY;
 	public Constants.Stage src2FwdValIn = Constants.Stage.EMPTY;
-	public boolean IQSrc1Status = false;
-	public boolean IQSrc2Status = false;
+	public boolean IQSrc1Status = true;
+	public boolean IQSrc2Status = true;
+	public boolean inExecution = false;
 	public boolean ROBDestStatus = false;
+	
 	
 	/**
 	 * getInstructionOpcode which gets the opcode of an instruction and stores to result.

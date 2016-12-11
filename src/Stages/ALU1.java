@@ -33,24 +33,52 @@ public class ALU1 implements ProcessListener{
 	public void process() {
 		try{
 			
-			instruction = processor.decode.instruction;
+			instruction = null;
+			int countIQ = Constants.IQ_COUNT;
+	
+			for(int i=0; i < countIQ; i++){
+               //false checkin ALU1
+				if(processor.IQEntry.readIQEntry(i).opCode != null){
+						if((processor.IQEntry.readIQEntry(i).opCode.ordinal() < 8 && processor.IQEntry.readIQEntry(i).opCode.ordinal() != 2)
+							&& !processor.IQEntry.readIQEntry(i).inExecution
+							&& !processor.IQEntry.readIQEntry(i).src1Stall
+							&& !processor.IQEntry.readIQEntry(i).src2Stall)
+						{
+						   processor.IQEntry.readIQEntry(i).inExecution = true;
+						   instruction = processor.IQEntry.readIQEntry(i);
+						   break;
+						}	
+					}
+				else{
+					break;
+				}
+				
+			}
+			
+			if(instruction == null)
+			{
+				return;				
+			}
 		
-			if(instruction != null && (instruction.opCode.ordinal() >= 8 || instruction.opCode.ordinal() == 2))
+			
+			//instruction = processor.decode.instruction;
+		
+			/*if(instruction != null && instruction.opCode.ordinal() >= 10)
 			{
 				instruction = null;
 				return;			
-			}
+			}*/
 			
-			if(instruction != null){
+			/*if(instruction != null){
 				 if(instruction.src1Stall || instruction.src2Stall){
 					 instruction = null;
 						return;	
 				  }
-			}
+			}*/
 					
 			//processor.decode.readSources();	
 			
-			pc.write(processor.decode.pc.read());
+			pc.write(processor.dispatch.pc.read());
 			
 			if(instruction != null){
 			
@@ -67,19 +95,7 @@ public class ALU1 implements ProcessListener{
 						
 					}
 					
-					/*if(instruction.src1FwdValIn == Constants.Stage.MULFU){
-						
-						if(instruction.src1Add!=null && processor.memoryStage.instruction != null  
-								&& processor.memoryStage.instruction.dest != null
-								   && processor.memoryStage.instruction.dest.intValue() == instruction.src1Add
-								   && processor.memoryStage.instruction.opCode != Constants.OpCode.LOAD){
-							   instruction.src1 = processor.memoryStage.result.temRread();	
-							   instruction.src1Stall = false;
-						   }	
-						
-					}*/
-					
-					if(instruction.src1FwdValIn == Constants.Stage.LSFU){
+					if(instruction.src1FwdValIn == Constants.Stage.MEMORYSTAGE){
 						
 						if( instruction.src1Add!=null && processor.writeBack.instruction != null  
 								&& processor.writeBack.instruction.dest != null
@@ -104,18 +120,7 @@ public class ALU1 implements ProcessListener{
 						
 					}
 					
-					/*if(instruction.src2FwdValIn == Constants.Stage.MULFU){
-						
-						if(instruction.src2Add!=null && processor.memoryStage.instruction != null 
-								&& processor.memoryStage.instruction.dest != null
-								   && processor.memoryStage.instruction.dest.intValue()  == instruction.src2Add
-								   && processor.memoryStage.instruction.opCode != Constants.OpCode.LOAD){
-							   instruction.src2 = processor.memoryStage.result.temRread();	
-							   instruction.src2Stall = false;
-						   }
-					}*/
-					
-					if(instruction.src2FwdValIn == Constants.Stage.LSFU){
+					if(instruction.src2FwdValIn == Constants.Stage.MEMORYSTAGE){
 						
 						if(instruction.src2Add != null && processor.writeBack.instruction != null 
 								&& processor.writeBack.instruction.dest != null

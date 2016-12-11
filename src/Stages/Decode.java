@@ -12,7 +12,7 @@ public class Decode implements ProcessListener {
 	public Instruction instruction;
 	public CycleListener pc;
 	
-	/**
+	/** //false checkin ALU1
 	 * Constructor for Decode stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
@@ -33,7 +33,7 @@ public class Decode implements ProcessListener {
 			return;
 		}	
 			
-		if(processor.isStalled){return;}
+		//if(processor.isStalled){return;}
 		
 			pc.write(processor.fetch.pc.read());
 			instruction = processor.fetch.instruction;

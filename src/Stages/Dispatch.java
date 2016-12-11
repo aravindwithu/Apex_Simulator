@@ -22,7 +22,7 @@ public class Dispatch implements ProcessListener {
 		this.processor = processor;
 	}
 
-	/**
+	/** //false checkin ALU1
 	 * Decode process method performs relevant action for halt, stall and decodes the necessary instruction. 
 	 */
 	public void process() {
@@ -33,16 +33,18 @@ public class Dispatch implements ProcessListener {
 			return;
 		}	
 			
-		if(processor.isStalled){return;}	
-			if(processor.decode.instruction != null)
-			if(processor.IQEntry.writeIQEntry(processor.decode.instruction)){				
-				pc.write(processor.decode.pc.read());
-				instruction = processor.decode.instruction;
-				processor.ROBEntry.writeIQEntry(instruction);				
-			}
-			else{
-				return;
-			}		
+		//if(processor.isStalled){return;}	
+		
+		if(processor.decode.instruction != null && processor.IQEntry.writeIQEntry(processor.decode.instruction)){				
+			pc.write(processor.decode.pc.read());
+			instruction = processor.decode.instruction;
+			processor.ROBEntry.writeIQEntry(instruction);				
+		}
+		else{
+			instruction = null;
+			return;
+		}
+			
 	} 
 	catch (Exception e) {
 			e.printStackTrace();

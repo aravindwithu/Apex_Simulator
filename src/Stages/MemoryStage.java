@@ -53,26 +53,18 @@ public class MemoryStage implements ProcessListener {
 				}
 				
 			}
-			else if(processor.branchFU.instruction != null){
-				instruction = processor.branchFU.instruction;
-				pc.write(processor.branchFU.pc.read());
-			}
-			else if(processor.multiplicationFU.instruction != null && processor.mulResultFoundCheck==true){
-				System.out.println("inside memeoty stage");
-				instruction = processor.multiplicationFU.instruction;
-				System.out.println("MultiplicationFU.mulResult"+ MultiplicationFU.mulResult);
-				result.write(MultiplicationFU.mulResult);
-				pc.write(processor.multiplicationFU.pc.read());
-				Processor.mulCount = 0;
-				processor.multiplicationFU.instruction = null;
-			}
+			else if(processor.delay.instruction != null){
+				instruction = processor.delay.instruction;
+				pc.write(processor.delay.pc.read());
+			}	
 			else
-			{	
+			{
 				instruction = null;
 			}
 			
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
+			System.err.println(processor.fALU2.pc.read()+"==>"+instruction);
 			//Main.displayRegisters();
 		}
 	}
