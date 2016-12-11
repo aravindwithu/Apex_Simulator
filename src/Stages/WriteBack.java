@@ -33,19 +33,19 @@ public class WriteBack implements ProcessListener{
 	 */
 	public void process() {
 		try {
-			instruction = processor.memoryStage.instruction;
-			pc.write(processor.memoryStage.pc.read());
+			instruction = processor.lSFU.instruction;
+			pc.write(processor.lSFU.pc.read());
 			if(instruction != null){
 				if(instruction.opCode == Constants.OpCode.HALT){
 					processor.cL.cycle++;
 					processor.memory.clearInstructions();
-					processor.memoryStage.clearStage();
+					processor.lSFU.clearStage();
 					Apex_Simulator.display();
 					System.out.println("Aborting execution! HALT encountered.");
 					processor.isHalt = false;
 					//System.exit(0);
 				} else if((instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal() || instruction.opCode == Constants.OpCode.MOV)){
-					processor.register.writeReg(instruction.dest.intValue(), processor.memoryStage.result.read());
+					processor.register.writeReg(instruction.dest.intValue(), processor.lSFU.result.read());
 				}
 				++Processor.INS_COUNT;
 			}

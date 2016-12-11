@@ -35,7 +35,7 @@ public class ALU1 implements ProcessListener{
 			
 			instruction = processor.decode.instruction;
 		
-			if(instruction != null && instruction.opCode.ordinal() >= 10)
+			if(instruction != null && (instruction.opCode.ordinal() >= 8 || instruction.opCode.ordinal() == 2))
 			{
 				instruction = null;
 				return;			
@@ -67,7 +67,19 @@ public class ALU1 implements ProcessListener{
 						
 					}
 					
-					if(instruction.src1FwdValIn == Constants.Stage.MEMORYSTAGE){
+					/*if(instruction.src1FwdValIn == Constants.Stage.MULFU){
+						
+						if(instruction.src1Add!=null && processor.memoryStage.instruction != null  
+								&& processor.memoryStage.instruction.dest != null
+								   && processor.memoryStage.instruction.dest.intValue() == instruction.src1Add
+								   && processor.memoryStage.instruction.opCode != Constants.OpCode.LOAD){
+							   instruction.src1 = processor.memoryStage.result.temRread();	
+							   instruction.src1Stall = false;
+						   }	
+						
+					}*/
+					
+					if(instruction.src1FwdValIn == Constants.Stage.LSFU){
 						
 						if( instruction.src1Add!=null && processor.writeBack.instruction != null  
 								&& processor.writeBack.instruction.dest != null
@@ -92,7 +104,18 @@ public class ALU1 implements ProcessListener{
 						
 					}
 					
-					if(instruction.src2FwdValIn == Constants.Stage.MEMORYSTAGE){
+					/*if(instruction.src2FwdValIn == Constants.Stage.MULFU){
+						
+						if(instruction.src2Add!=null && processor.memoryStage.instruction != null 
+								&& processor.memoryStage.instruction.dest != null
+								   && processor.memoryStage.instruction.dest.intValue()  == instruction.src2Add
+								   && processor.memoryStage.instruction.opCode != Constants.OpCode.LOAD){
+							   instruction.src2 = processor.memoryStage.result.temRread();	
+							   instruction.src2Stall = false;
+						   }
+					}*/
+					
+					if(instruction.src2FwdValIn == Constants.Stage.LSFU){
 						
 						if(instruction.src2Add != null && processor.writeBack.instruction != null 
 								&& processor.writeBack.instruction.dest != null

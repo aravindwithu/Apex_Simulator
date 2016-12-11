@@ -6,7 +6,7 @@ import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
-public class MemoryStage implements ProcessListener {
+public class LSFU implements ProcessListener {
 	
 	public Processor processor;
 	public Instruction instruction;
@@ -18,7 +18,7 @@ public class MemoryStage implements ProcessListener {
 	 * Constructor for Memory stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
-	public MemoryStage(Processor processor) {
+	public LSFU(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
 		this.processor = processor;
@@ -31,41 +31,70 @@ public class MemoryStage implements ProcessListener {
 	 */
 	public void process() {
 		try {			
-			if(processor.fALU2.instruction != null){
-				instruction = processor.fALU2.instruction;
-				pc.write(processor.fALU2.pc.read());
-							
-				if(instruction.opCode == Constants.OpCode.STORE){
+	
+				if(processor.decode.instruction != null){
+					instruction = processor.decode.instruction;
 					
-					if(instruction.isLiteral){
-						instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.src1);
-						}
-					else{
-						processor.memory.writeMem(processor.fALU2.result.read().intValue(), instruction.dest);
+					if(instruction != null && instruction.opCode.ordinal() != 8 && instruction.opCode.ordinal() != 9){
+						instruction = null;
+						return;			
 					}
 					
+					if(instruction != null){
+						 if(instruction.src1Stall || instruction.src2Stall){
+							 instruction = null;
+								return;	
+						  }
+					}
 					
-				} else if(instruction.opCode == Constants.OpCode.LOAD){
-					result.write(processor.memory.readMem(processor.fALU2.result.read().intValue()));
-				} else {				
-					result.write(processor.fALU2.result.read());
-				}
-				
-			}
-			else if(processor.branchFU.instruction != null){
+					pc.write(processor.decode.pc.read());
+
+					switch(instruction.opCode.ordinal()){
+						case 8:
+							if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
+								result.write(instruction.src1 + instruction.src2);
+							}else{								//LOAD rdest, rscr1, literal
+								result.write(instruction.src1 + instruction.literal);
+							}
+							break;
+						case 9:
+							if(instruction.isLiteral){
+								result.write(instruction.src2 + instruction.literal);
+							}else {
+								result.write(instruction.src1 + instruction.src2);
+							}
+							break;
+					}
+									
+						if(instruction.opCode == Constants.OpCode.STORE){
+							
+							if(instruction.isLiteral){
+								instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
+								processor.memory.writeMem(processor.lSFU.result.read().intValue(), instruction.src1);
+								}
+							else{
+								processor.memory.writeMem(processor.lSFU.result.read().intValue(), instruction.dest);
+							}
+							
+							
+						} else if(instruction.opCode == Constants.OpCode.LOAD){
+							result.write(processor.memory.readMem(processor.lSFU.result.read().intValue()));
+						} else {				
+							result.write(processor.lSFU.result.read());
+						}
+						
+					}
+			/*else if(processor.branchFU.instruction != null){
 				instruction = processor.branchFU.instruction;
 				pc.write(processor.branchFU.pc.read());
 			}
 			else if(processor.multiplicationFU.instruction != null && processor.mulResultFoundCheck==true){
-				System.out.println("inside memeoty stage");
 				instruction = processor.multiplicationFU.instruction;
-				System.out.println("MultiplicationFU.mulResult"+ MultiplicationFU.mulResult);
 				result.write(MultiplicationFU.mulResult);
 				pc.write(processor.multiplicationFU.pc.read());
 				Processor.mulCount = 0;
 				processor.multiplicationFU.instruction = null;
-			}
+			}*/
 			else
 			{	
 				instruction = null;

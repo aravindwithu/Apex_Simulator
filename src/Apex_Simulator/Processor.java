@@ -2,18 +2,13 @@ package Apex_Simulator;
 
 import java.util.ArrayList;
 import java.util.List;
-import Stages.Decode;
-import Stages.ALU1;
-import Stages.ALU2;
-import Stages.BranchFU;
-import Stages.Delay;
-import Stages.Fetch;
-import Stages.MemoryStage;
-import Stages.WriteBack;
+import Stages.*;
 import Utility.Constants;
 
 public class Processor {	
 	public static int INS_COUNT;	
+	public static int mulCount = 0;
+	public boolean mulResultFoundCheck = false;
 	public Memory memory;
 	public RegisterListener register;
 	public CycleListener cL;
@@ -22,8 +17,10 @@ public class Processor {
 	public ALU1 fALU1;
 	public ALU2 fALU2;
 	public BranchFU branchFU;
+	public MultiplicationFU multiplicationFU; 
 	public Delay delay;
 	public MemoryStage memoryStage;
+	public LSFU lSFU;
 	public WriteBack writeBack;
 	public boolean isZero = false;
 	public boolean isBranchZ = false;
@@ -40,10 +37,12 @@ public class Processor {
 		memory = new Memory(file);
 		register = new RegisterListener();			
 		writeBack = new WriteBack(this);
-		memoryStage = new MemoryStage(this);
-		delay = new Delay(this);
+		//memoryStage = new MemoryStage(this);
+		//delay = new Delay(this);
+		lSFU = new LSFU(this);
 		fALU2 = new ALU2(this);
 		branchFU = new BranchFU(this);
+		multiplicationFU = new MultiplicationFU(this);
 		fALU1 = new ALU1(this);		
 		decode = new Decode(this);
 		fetch = new Fetch(this);
@@ -85,10 +84,10 @@ public class Processor {
 			{
 				if(decode.instruction.src1Add == memoryStage.instruction.dest
 						&& decode.instruction.opCode != Constants.OpCode.STORE){					
-					decode.instruction.src1FwdValIn = Constants.Stage.MEMORYSTAGE;					
+					decode.instruction.src1FwdValIn = Constants.Stage.LSFU;					
 					}
 				if(decode.instruction.src2Add == memoryStage.instruction.dest){					
-					decode.instruction.src2FwdValIn = Constants.Stage.MEMORYSTAGE;					
+					decode.instruction.src2FwdValIn = Constants.Stage.LSFU;					
 					}			
 			}
 			

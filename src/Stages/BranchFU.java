@@ -50,7 +50,7 @@ public class BranchFU implements ProcessListener{
 		}
 						
 			processor.decode.readSources();	
-			
+			pc.write(processor.decode.pc.read());
 			if(instruction != null){			
 				
 				if(instruction.src1 != null){
@@ -69,6 +69,44 @@ public class BranchFU implements ProcessListener{
 					   processor.isStalled = false;
 					}	
 			   }
+				
+				switch(instruction.opCode.ordinal()){						
+				case 10: //BZ, 							
+					if(processor.isZero){						
+						processor.fetch.clearStage(pc.temRread() + instruction.literal);
+						processor.decode.clearStage();	
+						processor.isBranchZ = false;
+					}
+					else{
+						processor.isBranchZ = false;
+					}
+					break;
+				case 11: //BNZ,			
+					if(!processor.isZero){						
+						processor.fetch.clearStage(pc.temRread() + instruction.literal);
+						processor.decode.clearStage();
+						processor.isBranchZ = false;
+					}
+					else{
+						processor.isBranchZ = false;
+					}
+					break;
+				case 12: //JUMP, 
+					processor.fetch.clearStage(instruction.literal + instruction.src1);
+					processor.decode.clearStage();
+					break;
+				case 13: //BAL, 
+					if(processor.decode.pc != null){
+						processor.register.setReg_X(processor.decode.pc.read());
+						}
+						processor.fetch.clearStage(instruction.src1+instruction.literal);
+						processor.decode.clearStage();
+					break;
+				case 14: //HALT
+					//processor.isHalt = true;
+					break;
+				}
+			
 			}
 						
 			
@@ -76,7 +114,6 @@ public class BranchFU implements ProcessListener{
 			if(instruction!=null && instruction.opCode == Constants.OpCode.HALT){				
 				processor.isHalt = true;				
 			}
-			pc.write(processor.decode.pc.read());	
 		}
 		catch(Exception e){
 			e.printStackTrace();	

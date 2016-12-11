@@ -42,11 +42,11 @@ public class ALU2 implements ProcessListener{
 			case 1:	//sub
 				result.write(instruction.src1-instruction.src2);
 				break;
-			case 2: // MUL
+			/*case 2: // MUL
 				result.write(instruction.src1*instruction.src2);
-				break;
+				break;*/
 			case 3: //MOVC
-				result.write(instruction.literal);
+				result.write(instruction.literal+0); //added 0 to literal
 				break;
 			case 4://MOV
 				result.write(instruction.src1);
@@ -60,20 +60,21 @@ public class ALU2 implements ProcessListener{
 			case 7:	//XOR
 				result.write(instruction.src1 ^ instruction.src2);
 				break;
-			case 8: //LOAD
+		   }
+			/*case 8: //LOAD
 				if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
 					result.write(instruction.src1 + instruction.src2);
 				} else {								//LOAD rdest, rscr1, literal
 					result.write(instruction.src1 + instruction.literal);
 				}
-				break;
-			case 9: //Store
+				break;*/
+			/*case 9: //Store
 				if(instruction.isLiteral){
 					result.write(instruction.src2 + instruction.literal);}
 				else {
 					result.write(instruction.src1 + instruction.src2);}
 				break;		
-			}
+			}*/
 			
 			if(result.temRread() == 0 && processor.isBranchZ){
 				processor.isZero = true;
