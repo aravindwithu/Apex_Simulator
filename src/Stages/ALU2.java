@@ -37,7 +37,7 @@ public class ALU2 implements ProcessListener{
 		if(instruction != null){	
 		   switch(instruction.opCode.ordinal()){
 			case 0: //add
-				result.write(instruction.src1+instruction.src2);
+				//result.write(instruction.src1+instruction.src2);
 				break;
 			case 1:	//sub
 				result.write(instruction.src1-instruction.src2);

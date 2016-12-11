@@ -1,9 +1,12 @@
 package Stages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Apex_Simulator.Apex_Simulator;
-import Apex_Simulator.Processor;
 import Apex_Simulator.CycleListener;
 import Apex_Simulator.ProcessListener;
+import Apex_Simulator.Processor;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -33,21 +36,40 @@ public class WriteBack implements ProcessListener{
 	 */
 	public void process() {
 		try {
-			instruction = processor.memoryStage.instruction;
-			pc.write(processor.memoryStage.pc.read());
-			if(instruction != null){
-				if(instruction.opCode == Constants.OpCode.HALT){
-					processor.cL.cycle++;
-					processor.memory.clearInstructions();
-					processor.memoryStage.clearStage();
-					Apex_Simulator.display();
-					System.out.println("Aborting execution! HALT encountered.");
-					processor.isHalt = false;
-					//System.exit(0);
-				} else if((instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal() || instruction.opCode == Constants.OpCode.MOV)){
-					processor.register.writeReg(instruction.dest.intValue(), processor.memoryStage.result.read());
+
+			List<Instruction> instructionList = new ArrayList<Instruction>();
+			if(processor.multiplicationFU.instruction != null && processor.mulResultFoundCheck==true){
+				System.out.println("inside write back stage");
+				instruction = processor.multiplicationFU.instruction;
+				System.out.println("MultiplicationFU.mulResult"+ MultiplicationFU.mulResult);
+				result.write(MultiplicationFU.mulResult);
+				pc.write(processor.multiplicationFU.pc.read());
+				Processor.mulCount = 0;
+				processor.multiplicationFU.instruction = null;
+			}else if(processor.branchFU.instruction != null){
+				instructionList.add(processor.branchFU.instruction);
+			}else if(processor.fALU2.instruction != null){
+				instructionList.add(processor.fALU2.instruction);
+			}
+			if(instructionList.size() > 0){
+				for (Instruction instructionObj : instructionList) {
+					instruction = instructionObj;
+					//pc.write(processor.multiplicationFU.pc.read()); need to analyse how pc vlaue can be taken form whch Fu
+					if(instruction != null){
+						if(instruction.opCode == Constants.OpCode.HALT){
+							processor.cL.cycle++;
+							processor.memory.clearInstructions();
+							//processor.multiplicationFU.clearStage(); nned to analse previous FU and clear it
+							Apex_Simulator.display();
+							System.out.println("Aborting execution! HALT encountered.");
+							processor.isHalt = false;
+						} else if((instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal() || instruction.opCode == Constants.OpCode.MOV)){
+							//processor.register.writeReg(instruction.dest.intValue(), processor.multiplicationFU.result.read()); // need to analse previous Fu and update register
+						}
+						++Processor.INS_COUNT;
+					}
+
 				}
-				++Processor.INS_COUNT;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

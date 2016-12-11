@@ -39,11 +39,13 @@ public class Apex_Simulator {
 			else if(command.contains(Constants.SIMULATE) || command.contains("s")){
 				try{
 					int n  = Integer.parseInt(command.split(" ")[1].trim());					
-					for(int i=0; i<n; i++){						
+
+					for(int i=0; i<n; i++){	
 							processor.doProcess();
 					}					
 				} 
 				catch (Exception e){
+					//e.printStackTrace();
 					System.out.println("Please enter correct number of cycles.");
 				}
 				
@@ -110,18 +112,18 @@ public class Apex_Simulator {
 			state = processor.fALU2.toString();
 			break;
 		case 6:
-			stageStr ="Delay Stage";
-			if(processor.delay.instruction != null){
-				pcStr = Long.toString(processor.delay.pc.read());
+			stageStr ="Multiplication FU";
+			if(processor.multiplicationFU.instruction != null){
+				pcStr = Long.toString(processor.multiplicationFU.pc.read());
 				}	
-			state = processor.delay.toString();
+			state = processor.multiplicationFU.toString();
 			break;
 		case 7:
-			stageStr ="Memory Stage";
-			if(processor.memoryStage.instruction != null){
-				pcStr = Long.toString(processor.memoryStage.pc.read());
+			stageStr ="LSFU";
+			if(processor.lSFU.instruction != null){
+				pcStr = Long.toString(processor.lSFU.pc.read());
 				}
-			state = processor.memoryStage.toString();
+			state = processor.lSFU.toString();
 			break;
 		case 8:
 			stageStr ="WriteBack Stage";
@@ -156,8 +158,9 @@ public class Apex_Simulator {
 		System.out.print(formatDisp(Constants.Stage.ALU1));
 		System.out.println(formatDisp(Constants.Stage.BRANCHFU));
 		System.out.print(formatDisp(Constants.Stage.ALU2));
-		System.out.println(formatDisp(Constants.Stage.DELAY)+"\n");
-		System.out.println(formatDisp(Constants.Stage.MEMORYSTAGE));
+		System.out.println(formatDisp(Constants.Stage.MULTIPLICATIONFU)+"\n");
+		System.out.println(formatDisp(Constants.Stage.LSFU));
+
 		System.out.println(formatDisp(Constants.Stage.WRITEBACK));
 		
 		

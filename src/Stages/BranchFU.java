@@ -62,10 +62,10 @@ public class BranchFU implements ProcessListener{
 					   processor.isStalled = false;
 					}		
 					
-					if(instruction.src1Add!=null && processor.memoryStage.instruction != null  
-							&& processor.memoryStage.instruction.dest != null
-						   && processor.memoryStage.instruction.dest.intValue() == instruction.src1Add){
-					   instruction.src1 = processor.memoryStage.result.temRread();
+					if(instruction.src1Add!=null && processor.lSFU.instruction != null  
+							&& processor.lSFU.instruction.dest != null
+						   && processor.lSFU.instruction.dest.intValue() == instruction.src1Add){
+					   instruction.src1 = processor.lSFU.result.temRread();
 					   processor.isStalled = false;
 					}	
 			   }

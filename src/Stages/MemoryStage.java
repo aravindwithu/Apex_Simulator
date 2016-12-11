@@ -53,10 +53,10 @@ public class MemoryStage implements ProcessListener {
 				}
 				
 			}
-			else if(processor.delay.instruction != null){
+			/*else if(processor.delay.instruction != null){
 				instruction = processor.delay.instruction;
 				pc.write(processor.delay.pc.read());
-			}	
+			}*/	
 			else
 			{
 				instruction = null;

@@ -1,26 +1,26 @@
 package Apex_Simulator;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
-
-
-import Stages.Decode;
-import Stages.Dispatch;
 import Stages.ALU1;
 import Stages.ALU2;
 import Stages.BranchFU;
-import Stages.Delay;
+import Stages.Decode;
+//import Stages.Delay;
+import Stages.Dispatch;
 import Stages.Fetch;
-import Stages.MemoryStage;
+import Stages.LSFU;
+//import Stages.MemoryStage;
+import Stages.MultiplicationFU;
 import Stages.WriteBack;
 import Utility.Constants;
 import Utility.Instruction;
 
 public class Processor {	
-	public static int INS_COUNT;	
+	public static int INS_COUNT;
+	public static int mulCount;
+	public boolean mulResultFoundCheck = false;
 	public Memory memory;
 	public UnifiedRegisterFile register;
 	public CycleListener cL;
@@ -30,8 +30,10 @@ public class Processor {
 	public ALU1 fALU1;
 	public ALU2 fALU2;
 	public BranchFU branchFU;
-	public Delay delay;
-	public MemoryStage memoryStage;
+	//public Delay delay;
+	//public MemoryStage memoryStage;
+	public LSFU lSFU;
+	public MultiplicationFU multiplicationFU; 
 	public WriteBack writeBack;
 	public IQ IQEntry;
 	public ROB ROBEntry;	
@@ -52,10 +54,12 @@ public class Processor {
 		IQEntry = new IQ();
 		ROBEntry = new ROB();
 		writeBack = new WriteBack(this);
-		memoryStage = new MemoryStage(this);
-		delay = new Delay(this);
+		//memoryStage = new MemoryStage(this);
+		//delay = new Delay(this);
+		lSFU = new LSFU(this);
 		fALU2 = new ALU2(this);
 		branchFU = new BranchFU(this);
+		multiplicationFU = new MultiplicationFU(this);
 		fALU1 = new ALU1(this);	
 		dispatch = new Dispatch(this);
 		decode = new Decode(this);
@@ -90,6 +94,7 @@ public class Processor {
 		/*if(decode.instruction !=null){
 			chkInds = decode.instruction;}*/
 		
+
 		int countIQ = Constants.IQ_COUNT;
 		for(int i=0; i < countIQ; i++){
 			try{ //false checkin ALU1
@@ -97,6 +102,7 @@ public class Processor {
 					chkInds = this.IQEntry.readIQEntry(i);
 				}
 				else{break;}
+
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -108,15 +114,15 @@ public class Processor {
 				chkInds.src1Stall = false;
 				chkInds.src2Stall = false;
 			
-				if(memoryStage.instruction != null && chkInds != null && memoryStage.instruction.dest != null
-						&& (chkInds.src1Add == memoryStage.instruction.dest || chkInds.src2Add == memoryStage.instruction.dest))
+				if(lSFU.instruction != null && chkInds != null && lSFU.instruction.dest != null
+						&& (chkInds.src1Add == lSFU.instruction.dest || chkInds.src2Add == lSFU.instruction.dest))
 				{
-					if(chkInds.src1Add == memoryStage.instruction.dest
+					if(chkInds.src1Add == lSFU.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){					
-						chkInds.src1FwdValIn = Constants.Stage.MEMORYSTAGE;					
+						chkInds.src1FwdValIn = Constants.Stage.LSFU;					
 						}
-					if(chkInds.src2Add == memoryStage.instruction.dest){					
-						chkInds.src2FwdValIn = Constants.Stage.MEMORYSTAGE;					
+					if(chkInds.src2Add == lSFU.instruction.dest){					
+						chkInds.src2FwdValIn = Constants.Stage.LSFU;					
 						}			
 				}
 				
