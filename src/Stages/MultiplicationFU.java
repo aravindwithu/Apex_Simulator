@@ -1,9 +1,6 @@
 package Stages;
 
 import Apex_Simulator.Processor;
-
-import javax.swing.plaf.multi.MultiColorChooserUI;
-
 import Apex_Simulator.CycleListener;
 import Apex_Simulator.ProcessListener;
 import Utility.Constants;

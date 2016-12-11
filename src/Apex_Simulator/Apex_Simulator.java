@@ -72,7 +72,7 @@ public class Apex_Simulator {
 			if(processor.fetch.instruction != null){				
 				pcStr = Long.toString(processor.fetch.pc.read());
 				}			
-			state = processor.fetch.toString();
+			state = processor.fetch.toString().replace('P', 'R');
 			break;
 		case 1:
 			stageStr ="Decode Stage";
@@ -152,13 +152,60 @@ public class Apex_Simulator {
 		System.out.println(formatDisp(Constants.Stage.LSFU));
 		System.out.println(formatDisp(Constants.Stage.WRITEBACK));
 		
+		
+		System.out.println("---------------------------------------------------IQ Entry-----------------------------------------------------------------------------------------");
+		//System.out.println("--------------------------------------------------FrontendRAT---------------------------------------------------------------------------------------");
+		int countIQ = Constants.IQ_COUNT;
+		try {
+			for(int i=0; i < countIQ; i++){
+				if(processor.IQEntry.readIQEntry(i).opCode != null){
+					System.out.print("IQ-"+i+" : "+processor.IQEntry.readIQEntry(i).toString()+"\t");}
+				else{
+					System.out.print("IQ-"+i+" : "+"Empty"+"\t	");}
+			}
+		}
+		catch(Exception e){ e.printStackTrace();}
+		System.out.println();
+		
+		
+		System.out.println("------------------------------------------------Front End Table Entry-------------------------------------------------------------------------------------------");
+		int countFET = Constants.RAT_COUNT;
+		try {
+			for(int i=0; i < countFET; i++){
+				
+					System.out.print("R-"+i+" : P"+processor.register.getFrontEndPhyReg(i)+"\t");
+				
+			}
+		}
+		catch(Exception e){ e.printStackTrace();}
+		System.out.println();
+		
+		
+		
+		
 		//displayRegisters
-		System.out.println("-------------------------------------------------Registers Data-----------------------------------------------------------------------------------------");
+		System.out.println("---------------------------------------------------URF Data-----------------------------------------------------------------------------------------");
+		//System.out.println("--------------------------------------------------FrontendRAT---------------------------------------------------------------------------------------");
 		int count = Constants.REG_COUNT - 1;
 		try {
-			for(int i=0; i < count; i++){
-					System.out.print("R"+i+" : "+processor.register.readReg(i)+"\t");
+			for(int i=0; i < 8; i++){
+					System.out.print("P"+i+"  : "+processor.register.readReg(i)+"\t	");
 			}
+			System.out.print("\n");
+			for(int i=8; i < 16; i++){
+				System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
+			}			
+			System.out.print("\n");
+			//System.out.print("--------------------------------------------------BackendRAT---------------------------------------------------------------------------------------");
+			System.out.print("\n");
+			for(int i=16; i < 24; i++){
+				System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
+			}
+			System.out.print("\n");
+			for(int i=24; i < 32; i++){
+				System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
+			}
+			
 			System.out.println("X : "+processor.register.readReg(count)+"\n");
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -48,7 +48,7 @@ public class ALU1 implements ProcessListener{
 				  }
 			}
 					
-			processor.decode.readSources();	
+			//processor.decode.readSources();	
 			
 			pc.write(processor.decode.pc.read());
 			

@@ -10,10 +10,11 @@ public class Processor {
 	public static int mulCount = 0;
 	public boolean mulResultFoundCheck = false;
 	public Memory memory;
-	public RegisterListener register;
+	public UnifiedRegisterFile register;
 	public CycleListener cL;
 	public Fetch fetch;
 	public Decode decode;
+	public Dispatch dispatch;
 	public ALU1 fALU1;
 	public ALU2 fALU2;
 	public BranchFU branchFU;
@@ -22,20 +23,24 @@ public class Processor {
 	public MemoryStage memoryStage;
 	public LSFU lSFU;
 	public WriteBack writeBack;
+	public IQ IQEntry;
+	public ROB ROBEntry;	
 	public boolean isZero = false;
 	public boolean isBranchZ = false;
 	public boolean isHalt = false;
 	public boolean isStalled = false;
 	public List<CycleListener> cycleListener = new ArrayList<CycleListener>();
 	public List<ProcessListener> processListeners = new ArrayList<ProcessListener>();
-		
+	
 	/**
 	 * Constructor for Processor initializes the Processor and also all the stages objects, memory, registers.
 	 * @param file of string type to be processed and relevant results are stored in instruction array list in memory.
 	 */
 	public Processor(String file) {
 		memory = new Memory(file);
-		register = new RegisterListener();			
+		register = new UnifiedRegisterFile();
+		IQEntry = new IQ();
+		ROBEntry = new ROB();
 		writeBack = new WriteBack(this);
 		//memoryStage = new MemoryStage(this);
 		//delay = new Delay(this);
@@ -43,7 +48,8 @@ public class Processor {
 		fALU2 = new ALU2(this);
 		branchFU = new BranchFU(this);
 		multiplicationFU = new MultiplicationFU(this);
-		fALU1 = new ALU1(this);		
+		fALU1 = new ALU1(this);	
+		dispatch = new Dispatch(this);
 		decode = new Decode(this);
 		fetch = new Fetch(this);
 		cL = new CycleListener(this);

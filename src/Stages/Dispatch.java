@@ -6,7 +6,7 @@ import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
-public class Decode implements ProcessListener {
+public class Dispatch implements ProcessListener {
 	
 	public Processor processor;
 	public Instruction instruction;
@@ -16,7 +16,7 @@ public class Decode implements ProcessListener {
 	 * Constructor for Decode stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
-	public Decode(Processor processor) {
+	public Dispatch(Processor processor) {
 		pc = new CycleListener(processor);
 		processor.processListeners.add(this);
 		this.processor = processor;
@@ -33,22 +33,22 @@ public class Decode implements ProcessListener {
 			return;
 		}	
 			
-		if(processor.isStalled){return;}
-		
-			pc.write(processor.fetch.pc.read());
-			instruction = processor.fetch.instruction;
-			if(instruction != null){
-				readSources();	
-				//System.out.println("archReg" + instruction.dest.intValue());
-				//System.out.println("phyReg" + processor.register.getFrontEndPhyReg(instruction.dest.intValue()));
-				
+		if(processor.isStalled){return;}	
+			if(processor.decode.instruction != null)
+			if(processor.IQEntry.writeIQEntry(processor.decode.instruction)){				
+				pc.write(processor.decode.pc.read());
+				instruction = processor.decode.instruction;
+				processor.ROBEntry.writeIQEntry(instruction);				
 			}
+			else{
+				return;
+			}		
 	} 
 	catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-		
+	
 	/**
 	 * ReadSources method reads the source registers of the instruction and fetches the same from register file. 
 	 */
@@ -56,23 +56,22 @@ public class Decode implements ProcessListener {
 			try {
 				if(instruction != null){
 					if(instruction.src1Add != null){
-						instruction.src1Add = processor.register.getFrontEndPhyReg(instruction.src1Add.intValue());
+						instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
 					}
-				
+					else{
+						instruction.src1 = null;
+					}
 					
 					if(instruction.src2Add != null){
-						instruction.src2Add = processor.register.getFrontEndPhyReg(instruction.src2Add.intValue());
+						instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
 					}
-				
+					else{
+						instruction.src2 = null;
+					}
 					
 					/*if(instruction.opCode == Constants.OpCode.STORE && instruction.dest == null && !instruction.isLiteral){
 						instruction.dest = processor.register.readReg(instruction.destAdd.intValue());
-					}	*/
-					
-					if(instruction.dest != null){				     
-						instruction.dest = processor.register.setFrontEndPhyReg(instruction.dest.intValue());
-					}
-				
+					}*/					
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
