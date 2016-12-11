@@ -32,18 +32,17 @@ public class Dispatch implements ProcessListener {
 			instruction = null;
 			return;
 		}	
-			
+		instruction = null;	
 		//if(processor.isStalled){return;}	
-		
-		if(processor.decode.instruction != null && processor.IQEntry.writeIQEntry(processor.decode.instruction)){				
+		if(processor.decode.instruction != null){
 			pc.write(processor.decode.pc.read());
 			instruction = processor.decode.instruction;
-			processor.ROBEntry.writeIQEntry(instruction);				
-		}
-		else{
-			instruction = null;
-			return;
-		}
+			instruction.insPc = processor.decode.pc.read(); 
+			readSources();
+			if(processor.iQ.writeIQEntry(instruction)){	
+				processor.ROBEntry.writeIQEntry(instruction);}
+		}	
+		else{return;}
 			
 	} 
 	catch (Exception e) {

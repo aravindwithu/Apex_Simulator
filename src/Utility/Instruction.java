@@ -20,6 +20,7 @@ public class Instruction {
 	public boolean IQSrc2Status = true;
 	public boolean inExecution = false;
 	public boolean ROBDestStatus = false;
+	public long insPc;
 	
 	
 	/**
@@ -38,6 +39,14 @@ public class Instruction {
 		}
 		return result;
 	}
+	
+	
+	
+	
+
+	
+	
+	
 	
 	/**
 	 * toString method returns the instruction format to the given opcode.

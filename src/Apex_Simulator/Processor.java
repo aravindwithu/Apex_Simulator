@@ -35,7 +35,7 @@ public class Processor {
 	public LSFU lSFU;
 	public MultiplicationFU multiplicationFU; 
 	public WriteBack writeBack;
-	public IQ IQEntry;
+	public IQ iQ;
 	public ROB ROBEntry;	
 	public boolean isZero = false;
 	public boolean isBranchZ = false;
@@ -51,7 +51,7 @@ public class Processor {
 	public Processor(String file) {
 		memory = new Memory(file);
 		register = new UnifiedRegisterFile();
-		IQEntry = new IQ();
+		iQ = new IQ();
 		ROBEntry = new ROB();
 		writeBack = new WriteBack(this);
 		//memoryStage = new MemoryStage(this);
@@ -98,28 +98,25 @@ public class Processor {
 		int countIQ = Constants.IQ_COUNT;
 		for(int i=0; i < countIQ; i++){
 			try{ //false checkin ALU1
-				if( this.IQEntry.readIQEntry(i).opCode != null){
-					chkInds = this.IQEntry.readIQEntry(i);
+				if( this.iQ.readIQEntry(i).opCode != null){
+					chkInds = this.iQ.readIQEntry(i);
 				}
 				else{break;}
 
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			
 			if(chkInds !=null){
 				chkInds.stallIn = Constants.Stage.EMPTY;
 				chkInds.src1FwdValIn = Constants.Stage.EMPTY;
 				chkInds.src2FwdValIn = Constants.Stage.EMPTY;
 				chkInds.src1Stall = false;
-				chkInds.src2Stall = false;
-			
+				chkInds.src2Stall = false;				
+				
 				if(lSFU.instruction != null && chkInds != null && lSFU.instruction.dest != null
 						&& (chkInds.src1Add == lSFU.instruction.dest || chkInds.src2Add == lSFU.instruction.dest))
 				{
 					if(chkInds.src1Add == lSFU.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){					
-						chkInds.src1FwdValIn = Constants.Stage.LSFU;					
+						    chkInds.src1FwdValIn = Constants.Stage.LSFU;
 						}
 					if(chkInds.src2Add == lSFU.instruction.dest){					
 						chkInds.src2FwdValIn = Constants.Stage.LSFU;					
@@ -131,10 +128,12 @@ public class Processor {
 				{			
 					if(chkInds.src1Add == fALU2.instruction.dest 
 							&& chkInds.opCode != Constants.OpCode.STORE){					
-						chkInds.src1FwdValIn = Constants.Stage.ALU2;					
+						       chkInds.src1FwdValIn = Constants.Stage.ALU2;
+						       chkInds.src1 = fALU2.instruction.destVal;
 						}
 					if(chkInds.src2Add == fALU2.instruction.dest){					
-						chkInds.src2FwdValIn = Constants.Stage.ALU2;					
+						      chkInds.src2FwdValIn = Constants.Stage.ALU2;	
+						      chkInds.src2 = fALU2.instruction.destVal;
 						}				
 				}
 				
@@ -172,6 +171,11 @@ public class Processor {
 					isBranchZ = true;
 				}
 			}		
+		
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		}
 	}
 }

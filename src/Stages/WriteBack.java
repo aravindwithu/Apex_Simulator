@@ -51,6 +51,7 @@ public class WriteBack implements ProcessListener{
 			}else if(processor.fALU2.instruction != null){
 				instructionList.add(processor.fALU2.instruction);
 			}
+			
 			if(instructionList.size() > 0){
 				for (Instruction instructionObj : instructionList) {
 					instruction = instructionObj;
@@ -63,8 +64,14 @@ public class WriteBack implements ProcessListener{
 							Apex_Simulator.display();
 							System.out.println("Aborting execution! HALT encountered.");
 							processor.isHalt = false;
-						} else if((instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal() || instruction.opCode == Constants.OpCode.MOV)){
-							//processor.register.writeReg(instruction.dest.intValue(), processor.multiplicationFU.result.read()); // need to analse previous Fu and update register
+						}
+						
+						else if(instruction.opCode == Constants.OpCode.MUL){
+							processor.register.writeReg(instruction.dest.intValue(), processor.multiplicationFU.result.read());
+						}
+						
+						else if(instruction.opCode.ordinal() < Constants.OpCode.LOAD.ordinal()){
+							processor.register.writeReg(instruction.dest.intValue(), processor.fALU2.result.read()); // need to analse previous Fu and update register
 						}
 						++Processor.INS_COUNT;
 					}

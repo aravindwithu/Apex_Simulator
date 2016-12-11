@@ -42,14 +42,14 @@ public class MultiplicationFU implements ProcessListener{
 					try{
 					for(int i=0; i < countIQ; i++){
 			               //false checkin ALU1
-							if(processor.IQEntry.readIQEntry(i).opCode != null){
-									if((processor.IQEntry.readIQEntry(i).opCode.ordinal() == 2)
-										&& !processor.IQEntry.readIQEntry(i).inExecution
-										&& !processor.IQEntry.readIQEntry(i).src1Stall
-										&& !processor.IQEntry.readIQEntry(i).src2Stall)
+							if(processor.iQ.readIQEntry(i).opCode != null){
+									if((processor.iQ.readIQEntry(i).opCode.ordinal() == 2)
+										&& !processor.iQ.readIQEntry(i).inExecution
+										&& !processor.iQ.readIQEntry(i).src1Stall
+										&& !processor.iQ.readIQEntry(i).src2Stall)
 									{
-									   processor.IQEntry.readIQEntry(i).inExecution = true;
-									   instruction = processor.IQEntry.readIQEntry(i);
+									   processor.iQ.readIQEntry(i).inExecution = true;
+									   instruction = processor.iQ.readIQEntry(i);
 									   break;
 									}	
 								}

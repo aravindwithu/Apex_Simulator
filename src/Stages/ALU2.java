@@ -37,30 +37,39 @@ public class ALU2 implements ProcessListener{
 		if(instruction != null){	
 		   switch(instruction.opCode.ordinal()){
 			case 0: //add
-				//result.write(instruction.src1+instruction.src2);
+				result.write(instruction.src1+instruction.src2);
+				instruction.destVal = instruction.src1+instruction.src2;
 				break;
 			case 1:	//sub
 				result.write(instruction.src1-instruction.src2);
+				instruction.destVal = instruction.src1-instruction.src2;
 				break;
 			case 2: // MUL
 				result.write(instruction.src1*instruction.src2);
+				instruction.destVal = instruction.src1*instruction.src2;
 				break;
 			case 3: //MOVC
 				result.write(instruction.literal);
+				instruction.destVal = instruction.literal;
 				break;
 			case 4://MOV
 				result.write(instruction.src1);
+				instruction.destVal = instruction.src1;
 				break;			
 			case 5: //AND
 				result.write(instruction.src1 & instruction.src2);
+				instruction.destVal = instruction.src1 & instruction.src2;
 				break;
 			case 6:	//OR
 				result.write(instruction.src1 | instruction.src2);
+				instruction.destVal = instruction.src1 | instruction.src2;
 				break;
 			case 7:	//XOR
 				result.write(instruction.src1 ^ instruction.src2);
+				instruction.destVal = instruction.src1 ^ instruction.src2;
 				break;
-			case 8: //LOAD
+				
+			/*case 8: //LOAD
 				if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
 					result.write(instruction.src1 + instruction.src2);
 				} else {								//LOAD rdest, rscr1, literal
@@ -72,7 +81,7 @@ public class ALU2 implements ProcessListener{
 					result.write(instruction.src2 + instruction.literal);}
 				else {
 					result.write(instruction.src1 + instruction.src2);}
-				break;		
+				break;		*/
 			}
 			
 			if(result.temRread() == 0 && processor.isBranchZ){

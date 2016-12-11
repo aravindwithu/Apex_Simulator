@@ -169,8 +169,8 @@ public class Apex_Simulator {
 		int countIQ = Constants.IQ_COUNT;
 		try {
 			for(int i=0; i < countIQ; i++){
-				if(processor.IQEntry.readIQEntry(i).opCode != null){
-					System.out.print("IQ-"+i+" : "+processor.IQEntry.readIQEntry(i).toString()+"\t");}
+				if(processor.iQ.readIQEntry(i).opCode != null){
+					System.out.print("IQ-"+i+" : "+processor.iQ.readIQEntry(i).toString()+"\t");}
 				else{
 					System.out.print("IQ-"+i+" : "+"Empty"+"\t	");}
 			}
