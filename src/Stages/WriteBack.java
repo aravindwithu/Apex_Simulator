@@ -65,15 +65,13 @@ public class WriteBack implements ProcessListener{
 							System.out.println("Aborting execution! HALT encountered.");
 							processor.isHalt = false;
 						}
-						
-						else if(instruction.opCode == Constants.OpCode.MUL){
-							processor.register.writeReg(instruction.dest.intValue(), processor.multiplicationFU.result.read());
+										
+						else if(instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal()){
+							processor.register.writeReg(instruction.dest.intValue(), instruction.destVal); // need to analse previous Fu and update register
 						}
 						
-						else if(instruction.opCode.ordinal() < Constants.OpCode.LOAD.ordinal()){
-							processor.register.writeReg(instruction.dest.intValue(), processor.fALU2.result.read()); // need to analse previous Fu and update register
-						}
-						++Processor.INS_COUNT;
+						instruction.isROBCommit = true;
+						++Processor.INS_COUNT;					
 					}
 
 				}

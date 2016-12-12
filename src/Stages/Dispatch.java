@@ -40,7 +40,7 @@ public class Dispatch implements ProcessListener {
 			instruction.insPc = processor.decode.pc.read(); 
 			readSources();
 			if(processor.iQ.writeIQEntry(instruction)){	
-				processor.ROBEntry.writeIQEntry(instruction);}
+				processor.rOB.writeROBEntry(instruction);}
 		}	
 		else{return;}
 			
@@ -56,14 +56,14 @@ public class Dispatch implements ProcessListener {
 	public void readSources(){
 			try {
 				if(instruction != null){
-					if(instruction.src1Add != null){
+					if(instruction.src1Add != null && processor.register.getIsRegValid(instruction.src1Add.intValue())){
 						instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
 					}
 					else{
 						instruction.src1 = null;
 					}
 					
-					if(instruction.src2Add != null){
+					if(instruction.src2Add != null && processor.register.getIsRegValid(instruction.src2Add.intValue())){
 						instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
 					}
 					else{

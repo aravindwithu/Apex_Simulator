@@ -1,7 +1,5 @@
 package Apex_Simulator;
 
-import java.util.*;
-
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -42,7 +40,7 @@ public class IQ {
 			throw new Exception("Illegal IQ Index : "+index);}
 	}
 	
-	public Instruction[] removeIQEntry(int index) throws Exception{
+	public void removeIQEntry(int index) throws Exception{
 		if(index >= 0 && index < Constants.IQ_COUNT){
 			if(this.IQEntry[index] != null){
 				int incIndex = Constants.IQ_COUNT - index -1;
@@ -62,15 +60,14 @@ public class IQ {
 			if(instruction.opCode != null){
 			System.out.println(instruction);}
 		}
-		return IQEntry;
 	}
 	
-	public void updateIQEntry(Instruction[] data){
+/*	public void updateIQEntry(Instruction[] data){
 		IQEntry = data;
 		for (Instruction instruction : data) {
 			//System.out.println(instruction);
 		}
-		}
+		}*/
 		
 	
 }

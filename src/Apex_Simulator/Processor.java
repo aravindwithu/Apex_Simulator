@@ -3,17 +3,7 @@ package Apex_Simulator;
 import java.util.ArrayList;
 import java.util.List;
 
-import Stages.ALU1;
-import Stages.ALU2;
-import Stages.BranchFU;
-import Stages.Decode;
-//import Stages.Delay;
-import Stages.Dispatch;
-import Stages.Fetch;
-import Stages.LSFU;
-//import Stages.MemoryStage;
-import Stages.MultiplicationFU;
-import Stages.WriteBack;
+import Stages.*;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -35,8 +25,9 @@ public class Processor {
 	public LSFU lSFU;
 	public MultiplicationFU multiplicationFU; 
 	public WriteBack writeBack;
+	public ROBCommit rOBCommit;
 	public IQ iQ;
-	public ROB ROBEntry;	
+	public ROB rOB;	
 	public boolean isZero = false;
 	public boolean isBranchZ = false;
 	public boolean isHalt = false;
@@ -52,7 +43,8 @@ public class Processor {
 		memory = new Memory(file);
 		register = new UnifiedRegisterFile();
 		iQ = new IQ();
-		ROBEntry = new ROB();
+		rOB = new ROB();
+		rOBCommit = new ROBCommit(this);
 		writeBack = new WriteBack(this);
 		//memoryStage = new MemoryStage(this);
 		//delay = new Delay(this);

@@ -132,6 +132,14 @@ public class Apex_Simulator {
 				}	
 			state = processor.writeBack.toString();
 			break;
+			
+		case 9:
+			stageStr ="ROB Commit Stage";
+			if(processor.rOBCommit.instruction != null){				
+				pcStr = Long.toString(processor.rOBCommit.pc.read());				
+				}	
+			state = processor.rOBCommit.toString();
+			break;
 		}
 		
 		stageStr += "	==> PC : ";
@@ -162,10 +170,10 @@ public class Apex_Simulator {
 		System.out.println(formatDisp(Constants.Stage.LSFU));
 
 		System.out.println(formatDisp(Constants.Stage.WRITEBACK));
+		System.out.println(formatDisp(Constants.Stage.ROBCOMMIT));
 		
 		
 		System.out.println("---------------------------------------------------IQ Entry-----------------------------------------------------------------------------------------");
-		//System.out.println("--------------------------------------------------FrontendRAT---------------------------------------------------------------------------------------");
 		int countIQ = Constants.IQ_COUNT;
 		try {
 			for(int i=0; i < countIQ; i++){
@@ -178,8 +186,8 @@ public class Apex_Simulator {
 		catch(Exception e){ e.printStackTrace();}
 		System.out.println();
 		
-		
-		System.out.println("------------------------------------------------Front End Table Entry-------------------------------------------------------------------------------------------");
+				
+		System.out.println("------------------------------------------------Front End Table Entry----------------------------------------------------------------------------------------");
 		int countFET = Constants.RAT_COUNT;
 		try {
 			for(int i=0; i < countFET; i++){
@@ -192,11 +200,33 @@ public class Apex_Simulator {
 		System.out.println();
 		
 		
-		
+		System.out.println("---------------------------------------------------ROB Entry----------------------------------------------------------------------------------------");
+		int countROB = Constants.ROB_COUNT;
+		try {
+			for(int i=0; i < countROB; i++){
+				if(processor.rOB.readROBEntry(i).opCode != null){
+					System.out.print("ROB-"+i+" : "+processor.rOB.readROBEntry(i).toString()+"\t");}
+				else{
+					System.out.print("ROB-"+i+" : "+"Empty"+"\t	");}
+			}
+		}
+		catch(Exception e){ e.printStackTrace();}
+		System.out.println();
+				
+		System.out.println("------------------------------------------------Back End Table Entry----------------------------------------------------------------------------------------");
+		int countBET = Constants.RAT_COUNT;
+		try {
+			for(int i=0; i < countBET; i++){
+				
+					System.out.print("R-"+i+" : P"+processor.register.getBackEndPhyReg(i)+"\t");
+				
+			}
+		}
+		catch(Exception e){ e.printStackTrace();}
+		System.out.println();
 		
 		//displayRegisters
 		System.out.println("---------------------------------------------------URF Data-----------------------------------------------------------------------------------------");
-		//System.out.println("--------------------------------------------------FrontendRAT---------------------------------------------------------------------------------------");
 		int count = Constants.REG_COUNT - 1;
 		try {
 			for(int i=0; i < 8; i++){

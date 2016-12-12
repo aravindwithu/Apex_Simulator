@@ -69,16 +69,16 @@ public class UnifiedRegisterFile {
 			throw new Exception("Illegal register address : R"+index);}
 	}
 	
-	public void setRegStatus(int index, boolean data) throws Exception{
+	public void setIsRegValid(int index, boolean data) throws Exception{
 		if(index >= 0 && index < Constants.REG_COUNT){
-			Regs[index].setStatus(data);}
+			Regs[index].setIsValid(data);}
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}
 	
-	public boolean getRegStatus(int index) throws Exception{
+	public boolean getIsRegValid(int index) throws Exception{
 		if(index >= 0 && index < Constants.REG_COUNT){
-			return this.Regs[index].getStatus();}
+			return this.Regs[index].getIsValid();}
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}
@@ -120,19 +120,23 @@ public class UnifiedRegisterFile {
 			throw new Exception("Illegal register address : R"+index);
 	}
 	
-	public void setBackEndPhyReg(int index) throws Exception{
-		if(index >= 0 && index < Constants.RAT_COUNT)
+	public void setBackEndPhyReg(int archReg, int phyReg) throws Exception{
+		if(archReg >= 0 && archReg < Constants.RAT_COUNT)
 		{
-			for(int RegAdd=0; RegAdd<Constants.REG_COUNT; RegAdd++){
-				if(Regs[RegAdd].getAvailability()){
-					this.backEndRAT[index].setRATPhyReg(RegAdd);
-					Regs[RegAdd].setAvailability(false);
-					break;
-				}
+			if(backEndRAT[archReg].getRATPhyReg() == -1){
+				backEndRAT[archReg].setRATPhyReg(phyReg);
+				Regs[phyReg].setIsValid(true);
 			}
+			else{
+				Regs[(int)(backEndRAT[archReg].getRATPhyReg())].setAvailability(true);
+				backEndRAT[archReg].setRATPhyReg(phyReg);
+				Regs[phyReg].setIsValid(true);
+			}
+			
 		}
 		else{
-			throw new Exception("Illegal register address : R"+index);}
+			throw new Exception("Illegal arch back end RAT register address : "+archReg);}
+		
 	}	
 	
 	public long getBackEndPhyReg(int index) throws Exception{

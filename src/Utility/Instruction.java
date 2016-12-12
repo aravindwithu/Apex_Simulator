@@ -6,6 +6,9 @@ public class Instruction {
 	public Long dest;
 	public Long src1Add;
 	public Long src2Add;
+	public Long archdest;
+	public Long archsrc1Add;
+	public Long archsrc2Add;
 	public Long destVal;	
 	public Long src1;	
 	public Long src2;
@@ -16,10 +19,10 @@ public class Instruction {
 	public Constants.Stage stallIn = Constants.Stage.EMPTY;
 	public Constants.Stage src1FwdValIn = Constants.Stage.EMPTY;
 	public Constants.Stage src2FwdValIn = Constants.Stage.EMPTY;
-	public boolean IQSrc1Status = true;
-	public boolean IQSrc2Status = true;
+	//public boolean IQSrc1Status = true;
+	//public boolean IQSrc2Status = true;
 	public boolean inExecution = false;
-	public boolean ROBDestStatus = false;
+	public boolean isROBCommit = false;
 	public long insPc;
 	
 	

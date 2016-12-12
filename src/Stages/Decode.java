@@ -56,11 +56,13 @@ public class Decode implements ProcessListener {
 			try {
 				if(instruction != null){
 					if(instruction.src1Add != null){
+						instruction.archsrc1Add = instruction.src1Add;
 						instruction.src1Add = processor.register.getFrontEndPhyReg(instruction.src1Add.intValue());
 					}
 				
 					
 					if(instruction.src2Add != null){
+						instruction.archsrc2Add = instruction.src2Add;
 						instruction.src2Add = processor.register.getFrontEndPhyReg(instruction.src2Add.intValue());
 					}
 				
@@ -69,7 +71,8 @@ public class Decode implements ProcessListener {
 						instruction.dest = processor.register.readReg(instruction.destAdd.intValue());
 					}	*/
 					
-					if(instruction.dest != null){				     
+					if(instruction.dest != null){	
+						instruction.archdest = instruction.dest;
 						instruction.dest = processor.register.setFrontEndPhyReg(instruction.dest.intValue());
 					}
 				

@@ -2,7 +2,7 @@ package Utility;
 
 public class PhysicalRegister {
 	private long regValue;	
-	private boolean status;
+	private boolean isValid;
 	private boolean availability;
 	
 	/**
@@ -11,7 +11,7 @@ public class PhysicalRegister {
 	public PhysicalRegister() {
 		//reset all registers to 0
 		regValue = 0;
-		status = false;
+		isValid = false;
 		availability = true;
 	}
 	
@@ -19,8 +19,8 @@ public class PhysicalRegister {
 		return regValue;
 	}
 	
-	public boolean getStatus() {
-		return status;
+	public boolean getIsValid() {
+		return isValid;
 	}
 	
 	public boolean getAvailability() {
@@ -31,8 +31,8 @@ public class PhysicalRegister {
 		regValue = reg_V;
 	}
 	
-	public void setStatus(boolean statusVal) {
-		status = statusVal;
+	public void setIsValid(boolean statusVal) {
+		isValid = statusVal;
 	}
 	
 	public void setAvailability(boolean availabilityVal) {
