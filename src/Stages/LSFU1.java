@@ -11,7 +11,7 @@ public class LSFU1 implements ProcessListener {
 	public Processor processor;
 	public Instruction instruction;
 	public CycleListener pc;
-	
+	public static int getNextInstuction = -1;
 	CycleListener result;
 	
 	/**
@@ -31,6 +31,7 @@ public class LSFU1 implements ProcessListener {
 	 */
 	public void process() {
 		try {			
+			if(getNextInstuction==-1){
 			Instruction tempIns = null;
 			int countIQ = Constants.IQ_COUNT;
 			int IQInsAdd = 0;
@@ -72,6 +73,26 @@ public class LSFU1 implements ProcessListener {
 				return;
 			}
 			
+			switch(instruction.opCode.ordinal()){
+			case 8:
+				if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
+					result.write(instruction.src1 + instruction.src2);
+					instruction.destVal = instruction.src1+instruction.src2;
+				}else{								//LOAD rdest, rscr1, literal
+					result.write(instruction.src1 + instruction.literal);
+					instruction.destVal = (long)(instruction.src1+instruction.literal);
+				}
+				break;
+			case 9:
+				if(instruction.isLiteral){
+					result.write(instruction.src2 + instruction.literal);
+					instruction.destVal = instruction.src1+instruction.literal;
+				}else {
+					result.write(instruction.src1 + instruction.src2);
+					instruction.destVal = instruction.src1+instruction.src2;
+				}
+				break;
+			}
 				/*if(processor.iQ.instruction != null){
 					instruction = processor.decode.instruction;			
 					
@@ -135,6 +156,7 @@ public class LSFU1 implements ProcessListener {
 				instruction = null;
 			}
 		*/	
+			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			//Main.displayRegisters();

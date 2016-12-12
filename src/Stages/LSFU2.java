@@ -31,7 +31,7 @@ public class LSFU2 implements ProcessListener {
 	 */
 	public void process() {
 		try {			
-	
+			
 				if(processor.lSFU1.instruction != null){
 					instruction = processor.lSFU1.instruction;
 					
@@ -48,34 +48,12 @@ public class LSFU2 implements ProcessListener {
 					}
 					
 					pc.write(processor.lSFU1.pc.read());
-					switch(instruction.opCode.ordinal()){
-						case 8:
-							if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
-								result.write(instruction.src1 + instruction.src2);
-								instruction.destVal = instruction.src1+instruction.src2;
-							}else{								//LOAD rdest, rscr1, literal
-								result.write(instruction.src1 + instruction.literal);
-								instruction.destVal = (long)(instruction.src1+instruction.literal);
-							}
-							break;
-						case 9:
-							if(instruction.isLiteral){
-								result.write(instruction.src2 + instruction.literal);
-								instruction.destVal = instruction.src1+instruction.literal;
-							}else {
-								result.write(instruction.src1 + instruction.src2);
-								instruction.destVal = instruction.src1+instruction.src2;
-							}
-							break;
-					}
-									
+					
+					
 						if(instruction.opCode == Constants.OpCode.STORE){
-							
+							if(processor.rOB.readROBEntry(0).equals(instruction)){
 							if(instruction.isLiteral){
-								instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());/*
-								processor.memory.writeMem(processor.lSFU.result.read().intValue(), instruction.src1);
-								processor.memory.writeCacheMem(processor.lSFU.result.read().intValue(), instruction.src1.intValue());*/
-
+								instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
 								processor.memory.writeMem(instruction.destVal.intValue(), instruction.src1);
 								processor.memory.writeCacheMem(instruction.destVal.intValue(), instruction.src1.intValue());
 								}
@@ -83,35 +61,30 @@ public class LSFU2 implements ProcessListener {
 								processor.memory.writeMem(instruction.destVal.intValue(), instruction.dest);
 								processor.memory.writeCacheMem(instruction.destVal.intValue(), instruction.src1.intValue());
 							}
-							
+							processor.lSFU1.instruction = null;
+							LSFU1.getNextInstuction = 1;
+						}else{
+								LSFU1.getNextInstuction = 0;
+								}
 							
 						} else if(instruction.opCode == Constants.OpCode.LOAD){
-							if(processor.memory.readCacheMem(instruction.destVal.intValue())!=0){
-								instruction.destVal = processor.memory.readCacheMem(instruction.destVal.intValue());
-							}else{
-								instruction.destVal = processor.memory.readMem(instruction.destVal.intValue());
+							if(processor.rOB.readROBEntry(0).equals(instruction)){
+								if(processor.memory.readCacheMem(instruction.destVal.intValue())!=0){
+									instruction.destVal = processor.memory.readCacheMem(instruction.destVal.intValue());
+								}else{
+									instruction.destVal = processor.memory.readMem(instruction.destVal.intValue());
 							}
-						} /*else {				
-							result.write(processor.lSFU.result.read());
-						}*/
-						
-					}
-			/*else if(processor.branchFU.instruction != null){
-				instruction = processor.branchFU.instruction;
-				pc.write(processor.branchFU.pc.read());
-			}
-			else if(processor.multiplicationFU.instruction != null && processor.mulResultFoundCheck==true){
-				instruction = processor.multiplicationFU.instruction;
-				result.write(MultiplicationFU.mulResult);
-				pc.write(processor.multiplicationFU.pc.read());
-				Processor.mulCount = 0;
-				processor.multiplicationFU.instruction = null;
-			}*/
-			else
-			{	
-				instruction = null;
-			}
-			
+								processor.lSFU1.instruction = null;
+							LSFU1.getNextInstuction = 1;
+						}else{
+							LSFU1.getNextInstuction = 0;
+							}
+						}
+						else{	
+							instruction = null;
+						}
+				
+		}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			//Main.displayRegisters();

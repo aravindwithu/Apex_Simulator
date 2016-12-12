@@ -259,13 +259,13 @@ public class Apex_Simulator {
 				
 		//printMemory
 		System.out.print("----------------------------------------------First 100 Memory Locations-------------------------------------------------------------------------------");
-		List<Long> _100Memory = processor.memory.readFirst100();
+		/*List<Long> _100Memory = processor.memory.readFirst100();
 		for(int i=0; i < 10; i++){
 			System.out.println();
 			for(int j=0; j < 10; j++){
 				System.out.print("Mem["+(i*10+j)+"]"+" : " + _100Memory.get(i*10+j)+"\t");
 			}
-		}
+		}*/
 		System.out.println("\n--------------------------------------------------------------------------------------------------------------------------------------------");
 
 	}

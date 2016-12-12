@@ -47,8 +47,10 @@ public class WriteBack implements ProcessListener{
 			}else if(processor.fALU2.instruction != null){
 				instructionList.add(processor.fALU2.instruction);
 			}
-			else if(processor.lSFU2.instruction != null){
+			else if(processor.lSFU2.instruction != null && LSFU1.getNextInstuction == 1){
 				instructionList.add(processor.lSFU2.instruction);
+				LSFU1.getNextInstuction = -1;
+				processor.lSFU2.instruction = null;
 			}
 			
 			if(instructionList.size() > 0){
