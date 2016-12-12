@@ -3,6 +3,8 @@ package Stages;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.plaf.InsetsUIResource;
+
 import Apex_Simulator.Apex_Simulator;
 import Apex_Simulator.CycleListener;
 import Apex_Simulator.ProcessListener;
@@ -73,7 +75,6 @@ public class WriteBack implements ProcessListener{
 						instruction.isROBCommit = true;
 						++Processor.INS_COUNT;					
 					}
-
 				}
 			}
 		} catch (Exception e) {

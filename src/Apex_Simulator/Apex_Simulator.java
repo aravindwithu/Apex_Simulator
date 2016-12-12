@@ -119,7 +119,7 @@ public class Apex_Simulator {
 			state = processor.multiplicationFU.toString();
 			break;
 		case 7:
-			stageStr ="LSFU";
+			stageStr ="LSFU Stage";
 			if(processor.lSFU.instruction != null){
 				pcStr = Long.toString(processor.lSFU.pc.read());
 				}
@@ -132,7 +132,6 @@ public class Apex_Simulator {
 				}	
 			state = processor.writeBack.toString();
 			break;
-			
 		case 9:
 			stageStr ="ROB Commit Stage";
 			if(processor.rOBCommit.instruction != null){				
@@ -140,8 +139,14 @@ public class Apex_Simulator {
 				}	
 			state = processor.rOBCommit.toString();
 			break;
-		}
-		
+		case 10:
+			stageStr ="LFSU2 Stage";
+			if(processor.writeBack.instruction != null){				
+				pcStr = Long.toString(processor.lSFU2.pc.read());				
+				}	
+			state = processor.lSFU2.toString();
+			break;
+	}
 		stageStr += "	==> PC : ";
 		
 		String returnStr = 
@@ -168,7 +173,7 @@ public class Apex_Simulator {
 		System.out.print(formatDisp(Constants.Stage.ALU2));
 		System.out.println(formatDisp(Constants.Stage.MULTIPLICATIONFU)+"\n");
 		System.out.println(formatDisp(Constants.Stage.LSFU));
-
+		System.out.print(formatDisp(Constants.Stage.LSFU2));
 		System.out.println(formatDisp(Constants.Stage.WRITEBACK));
 		System.out.println(formatDisp(Constants.Stage.ROBCOMMIT));
 		

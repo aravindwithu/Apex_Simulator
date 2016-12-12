@@ -1,7 +1,10 @@
 package Apex_Simulator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import Utility.Constants;
 import Utility.FileProcessor;
 import Utility.Instruction;
@@ -9,7 +12,7 @@ import Utility.Instruction;
 public class Memory {
 	private long []memory = new long[Constants.MEM_SIZE];
 	private List<Instruction> instructions;
-	
+	private Map<Integer,Integer> cacheMap = new HashMap<Integer,Integer>();
 	/**
 	 * Constructor for Memory initializes the Memory.
 	 * @param file of string type to be processed and relevant results are stored in instruction array list in memory.
@@ -56,6 +59,24 @@ public class Memory {
 			throw new Exception("Illegal memory location, trying to access MEM["+index+"]");
 	}
 	
+	public long readCacheMem(int mem) throws Exception{
+			return getCachedData(mem);
+	}
+	
+	public void writeCacheMem(int mem, int data) throws Exception{
+			cacheMap.put(mem, data);
+	}
+	
+	public long getCachedData(int memLoc) {
+		// TODO Auto-generated method stub
+		for (Integer memoryCheck : cacheMap.keySet()) {
+			if(memoryCheck == memLoc){
+				return cacheMap.get(memoryCheck);
+			}
+		}
+		return 0;
+	}
+
 	/**
 	 * writeMem method writes the data to the memory location
 	 * @param  index of type int which specify memory location
@@ -92,4 +113,6 @@ public class Memory {
 		}
 		return data;
 	}
+
+	
 }

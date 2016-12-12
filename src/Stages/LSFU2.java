@@ -6,7 +6,7 @@ import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
-public class LSFU implements ProcessListener {
+public class LSFU2 implements ProcessListener {
 	
 	public Processor processor;
 	public Instruction instruction;
@@ -18,7 +18,7 @@ public class LSFU implements ProcessListener {
 	 * Constructor for Memory stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
-	public LSFU(Processor processor) {
+	public LSFU2(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
 		this.processor = processor;
@@ -31,34 +31,9 @@ public class LSFU implements ProcessListener {
 	 */
 	public void process() {
 		try {			
-			instruction = null;
-			int countIQ = Constants.IQ_COUNT;
 	
-			for(int i=0; i < countIQ; i++){
-				if(processor.iQ.readIQEntry(i).opCode != null){
-					if(instruction != null && instruction.opCode.ordinal() != 8 && instruction.opCode.ordinal() != 9
-							&& !processor.iQ.readIQEntry(i).inExecution
-							&& !processor.iQ.readIQEntry(i).src1Stall
-							&& !processor.iQ.readIQEntry(i).src2Stall)
-						{
-							processor.iQ.readIQEntry(i).inExecution = true;
-						    instruction = processor.iQ.readIQEntry(i);						    
-						    processor.iQ.removeIQEntry(i);						   
-						    break;
-						}	
-					}
-				else{
-					break;
-				}
-				
-			}
-			
-			if(instruction == null)
-			{
-				return;				
-			}
-				/*if(processor.iQ.instruction != null){
-					instruction = processor.decode.instruction;
+				if(processor.lSFU.instruction != null){
+					instruction = processor.lSFU.instruction;
 					
 					if(instruction != null && instruction.opCode.ordinal() != 8 && instruction.opCode.ordinal() != 9){
 						instruction = null;
@@ -71,22 +46,26 @@ public class LSFU implements ProcessListener {
 								return;	
 						  }
 					}
-				}*/
-					/*pc.write(processor.decode.pc.read());
+					
+					pc.write(processor.lSFU.pc.read());
 
 					switch(instruction.opCode.ordinal()){
 						case 8:
 							if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
 								result.write(instruction.src1 + instruction.src2);
+								instruction.destVal = instruction.src1+instruction.src2;
 							}else{								//LOAD rdest, rscr1, literal
 								result.write(instruction.src1 + instruction.literal);
+								instruction.destVal = instruction.src1+instruction.src2;
 							}
 							break;
 						case 9:
 							if(instruction.isLiteral){
 								result.write(instruction.src2 + instruction.literal);
+								instruction.destVal = instruction.src1+instruction.src2;
 							}else {
 								result.write(instruction.src1 + instruction.src2);
+								instruction.destVal = instruction.src1+instruction.src2;
 							}
 							break;
 					}
@@ -94,22 +73,31 @@ public class LSFU implements ProcessListener {
 						if(instruction.opCode == Constants.OpCode.STORE){
 							
 							if(instruction.isLiteral){
-								instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
+								instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());/*
 								processor.memory.writeMem(processor.lSFU.result.read().intValue(), instruction.src1);
+								processor.memory.writeCacheMem(processor.lSFU.result.read().intValue(), instruction.src1.intValue());*/
+
+								processor.memory.writeMem(instruction.destVal.intValue(), instruction.src1);
+								processor.memory.writeCacheMem(instruction.destVal.intValue(), instruction.src1.intValue());
 								}
 							else{
-								processor.memory.writeMem(processor.lSFU.result.read().intValue(), instruction.dest);
+								processor.memory.writeMem(instruction.destVal.intValue(), instruction.dest);
+								processor.memory.writeCacheMem(instruction.destVal.intValue(), instruction.src1.intValue());
 							}
 							
 							
 						} else if(instruction.opCode == Constants.OpCode.LOAD){
-							result.write(processor.memory.readMem(processor.lSFU.result.read().intValue()));
-						} else {				
+							if(processor.memory.readCacheMem(instruction.destVal.intValue())!=0){
+								instruction.destVal = processor.memory.readCacheMem(instruction.destVal.intValue());
+							}else{
+								instruction.destVal = processor.memory.readMem(instruction.destVal.intValue());
+							}
+						} /*else {				
 							result.write(processor.lSFU.result.read());
-						}
+						}*/
 						
 					}
-			else if(processor.branchFU.instruction != null){
+			/*else if(processor.branchFU.instruction != null){
 				instruction = processor.branchFU.instruction;
 				pc.write(processor.branchFU.pc.read());
 			}
@@ -119,12 +107,12 @@ public class LSFU implements ProcessListener {
 				pc.write(processor.multiplicationFU.pc.read());
 				Processor.mulCount = 0;
 				processor.multiplicationFU.instruction = null;
-			}
+			}*/
 			else
 			{	
 				instruction = null;
 			}
-		*/	
+			
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			//Main.displayRegisters();

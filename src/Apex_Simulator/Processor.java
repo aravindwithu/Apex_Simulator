@@ -23,6 +23,7 @@ public class Processor {
 	//public Delay delay;
 	//public MemoryStage memoryStage;
 	public LSFU lSFU;
+	public LSFU2 lSFU2;
 	public MultiplicationFU multiplicationFU; 
 	public WriteBack writeBack;
 	public ROBCommit rOBCommit;
@@ -48,10 +49,11 @@ public class Processor {
 		writeBack = new WriteBack(this);
 		//memoryStage = new MemoryStage(this);
 		//delay = new Delay(this);
-		lSFU = new LSFU(this);
+		lSFU2 = new LSFU2(this);
 		fALU2 = new ALU2(this);
 		branchFU = new BranchFU(this);
 		multiplicationFU = new MultiplicationFU(this);
+		lSFU = new LSFU(this);
 		fALU1 = new ALU1(this);	
 		dispatch = new Dispatch(this);
 		decode = new Decode(this);
@@ -103,15 +105,30 @@ public class Processor {
 				chkInds.src1Stall = false;
 				chkInds.src2Stall = false;				
 				
-				if(lSFU.instruction != null && chkInds != null && lSFU.instruction.dest != null
-						&& (chkInds.src1Add == lSFU.instruction.dest || chkInds.src2Add == lSFU.instruction.dest))
+				if(lSFU2.instruction != null && chkInds != null && lSFU2.instruction.dest != null
+						&& (chkInds.src1Add == lSFU2.instruction.dest || chkInds.src2Add == lSFU2.instruction.dest))
 				{
-					if(chkInds.src1Add == lSFU.instruction.dest
+					if(chkInds.src1Add == lSFU2.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){					
-						    chkInds.src1FwdValIn = Constants.Stage.LSFU;
+						    chkInds.src1FwdValIn = Constants.Stage.LSFU2;
+						    chkInds.src1 = fALU2.instruction.destVal;
 						}
-					if(chkInds.src2Add == lSFU.instruction.dest){					
-						chkInds.src2FwdValIn = Constants.Stage.LSFU;					
+					if(chkInds.src2Add == lSFU2.instruction.dest){					
+						chkInds.src2FwdValIn = Constants.Stage.LSFU2;		
+						chkInds.src2 = fALU2.instruction.destVal;
+						}			
+				}
+				
+				if(lSFU.instruction != null && chkInds != null && lSFU.instruction.dest != null)
+				{			
+					if(chkInds.src1Add == lSFU.instruction.dest
+							&& chkInds.opCode != Constants.OpCode.STORE){
+						isStalled = true;									
+						chkInds.src1Stall = true;
+						}
+					if(chkInds.src2Add == lSFU.instruction.dest){
+						isStalled = true;					
+						chkInds.src2Stall = true;
 						}			
 				}
 				
