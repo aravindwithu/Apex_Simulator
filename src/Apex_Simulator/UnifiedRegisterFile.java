@@ -6,8 +6,9 @@ import Utility.Constants;
 public class UnifiedRegisterFile {
 	
 	private PhysicalRegister []Regs = null;	
-	public RAT []frontEndRAT = null;
-	public RAT []backEndRAT = null;
+	private RAT []frontEndRAT = null;
+	private RAT []backEndRAT = null;
+	private RAT zReg = null;
 		
 	/**
 	 * Constructor for URF initializes the physical registers.
@@ -28,6 +29,8 @@ public class UnifiedRegisterFile {
 		for(int i=0; i < Constants.RAT_COUNT; ++i){
 			backEndRAT[i] = new RAT();
 			}
+		
+		zReg = new RAT();
 	}
 	
 	/**
@@ -145,4 +148,34 @@ public class UnifiedRegisterFile {
 		else
 			throw new Exception("Illegal register address : R"+index);
 	}
+	
+	public long getZReg(){
+		return zReg.getRATPhyReg();
+	}
+	
+	public void setZReg(long data){
+		 zReg.setRATPhyReg(data);
+	}
+	
+	public void setZFlag(int phyReg,int data){
+		Regs[phyReg].setZFlag(data);
+	}
+	
+	public int getZFlag(int phyReg){
+		if(Regs[phyReg].getZFlag() != -1){
+		return Regs[phyReg].getZFlag();}
+		else{
+			return -1;
+		}
+	}
+	
+	public void setAllFrontEntTable(RAT[] newRAT){
+		frontEndRAT = newRAT;
+	}
+	
+	public RAT[] getAllBackEntTable(){
+		return backEndRAT;
+	}
+	
+	
 }

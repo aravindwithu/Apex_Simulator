@@ -3,6 +3,7 @@ package Stages;
 import Apex_Simulator.CycleListener;
 import Apex_Simulator.ProcessListener;
 import Apex_Simulator.Processor;
+import Apex_Simulator.ROB;
 import Utility.Constants;
 import Utility.Instruction;
 
@@ -28,9 +29,18 @@ public class ROBCommit implements ProcessListener{
 				if(processor.rOB.readROBEntry(0).opCode != null){
 						if(processor.rOB.readROBEntry(0).isROBCommit)
 						{
-							processor.rOB.readROBEntry(0).isROBCommit = false;							
+							processor.rOB.readROBEntry(0).isROBCommit = false;		
 							instruction = processor.rOB.readROBEntry(0);	
-							if(instruction.opCode != Constants.OpCode.STORE){
+												
+							if(instruction.opCode.ordinal() > 9 
+									&& instruction.opCode != Constants.OpCode.HALT 
+									&& instruction.opCode != Constants.OpCode.IDLE
+									&& instruction.isBrnTaken){
+								processor.fetch.clearStage(instruction.brnTrgAdd);
+								processor.rOB = new ROB();
+								processor.register.setAllFrontEntTable(processor.register.getAllBackEntTable());
+							}
+							else if(instruction.opCode != Constants.OpCode.STORE){
 								processor.register.setBackEndPhyReg(instruction.archdest.intValue(), instruction.dest.intValue());
 							}
 							processor.rOB.removeROBEntry();
@@ -48,7 +58,9 @@ public class ROBCommit implements ProcessListener{
 			e.printStackTrace();
 		}
 	}
+	
 
+	
 	/**
 	 * clearStage method clears the WriteBack stage.
 	 */

@@ -33,7 +33,7 @@ public class Decode implements ProcessListener {
 			return;
 		}	
 			
-		//if(processor.isStalled){return;}
+		if(processor.isStalled){return;}
 		
 			pc.write(processor.fetch.pc.read());
 			instruction = processor.fetch.instruction;
@@ -73,7 +73,12 @@ public class Decode implements ProcessListener {
 					
 					if(instruction.dest != null){	
 						instruction.archdest = instruction.dest;
-						instruction.dest = processor.register.setFrontEndPhyReg(instruction.dest.intValue());
+						instruction.dest = processor.register.setFrontEndPhyReg(instruction.dest.intValue());	
+						
+						if(instruction.opCode.ordinal() > 9 && processor.dispatch.instruction != null){
+							processor.register.setZReg(processor.dispatch.instruction.dest.intValue());
+						}
+						
 					}
 				
 				}

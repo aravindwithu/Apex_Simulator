@@ -33,7 +33,7 @@ public class Dispatch implements ProcessListener {
 			return;
 		}	
 		instruction = null;	
-		//if(processor.isStalled){return;}	
+		if(processor.isStalled){return;}	
 		if(processor.decode.instruction != null){
 			pc.write(processor.decode.pc.read());
 			instruction = processor.decode.instruction;

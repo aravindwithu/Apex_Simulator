@@ -84,7 +84,7 @@ public class Processor {
 		}
 		
 		cL.cycle++;
-		isStalled = false;
+		//isStalled = false;
 		Instruction chkInds= null;
 		/*if(decode.instruction !=null){
 			chkInds = decode.instruction;}*/
@@ -138,11 +138,11 @@ public class Processor {
 				{			
 					if(chkInds.src1Add == lSFU1.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){
-						isStalled = true;									
+						//isStalled = true;									
 						chkInds.src1Stall = true;
 						}
 					if(chkInds.src2Add == lSFU1.instruction.dest){
-						isStalled = true;					
+						//isStalled = true;					
 						chkInds.src2Stall = true;
 						}			
 				}
@@ -165,11 +165,11 @@ public class Processor {
 				{			
 					if(chkInds.src1Add == fALU1.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){
-						isStalled = true;									
+						//isStalled = true;									
 						chkInds.src1Stall = true;
 						}
 					if(chkInds.src2Add == fALU1.instruction.dest){
-						isStalled = true;					
+						//isStalled = true;					
 						chkInds.src2Stall = true;
 						}			
 				}
@@ -179,21 +179,21 @@ public class Processor {
 				{			
 					if(chkInds.src1Add == fALU2.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){
-						isStalled = true;									
+						//isStalled = true;									
 						chkInds.src1Stall = true;
 						}
 					if(chkInds.src2Add == fALU2.instruction.dest){
-						isStalled = true;					
+						//isStalled = true;					
 						chkInds.src2Stall = true;
 						}			
 				}	
 				
-				if(chkInds != null && (chkInds.opCode == Constants.OpCode.BZ || chkInds.opCode == Constants.OpCode.BNZ)
-						&& !isBranchZ){
-					isStalled = true;	
-					isZero = false;
-					isBranchZ = true;
-				}
+//				if(chkInds != null && (chkInds.opCode == Constants.OpCode.BZ || chkInds.opCode == Constants.OpCode.BNZ)
+//						&& !isBranchZ){
+//					isStalled = true;	
+//					isZero = false;
+//					isBranchZ = true;
+//				}
 			}		
 		
 		}

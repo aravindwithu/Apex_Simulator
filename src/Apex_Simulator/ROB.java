@@ -60,4 +60,13 @@ public class ROB {
 		else{
 			throw new Exception("Illegal IQ Index : "+index);}
 	}
+	
+	public void setBranchTaken(Constants.OpCode brnOpcode, boolean isBrnTaken, long brnTrgAdd){
+		for (Instruction rOB : ROBEntry) {
+			if(rOB.opCode == brnOpcode){
+				rOB.isBrnTaken = isBrnTaken;
+				rOB.brnTrgAdd = brnTrgAdd;
+			}
+		}
+	}
 }

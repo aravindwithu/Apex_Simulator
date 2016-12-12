@@ -35,7 +35,7 @@ public class Fetch implements ProcessListener {
 			instruction = null;
 			return;
 		}
-		//if(processor.isStalled){return;}			
+		if(processor.isStalled){return;}			
 		pc.write(nextPc);
 		instruction = processor.memory.getInstruction(nextPc);
 		if(instruction != null){

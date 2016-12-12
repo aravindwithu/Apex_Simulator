@@ -37,7 +37,8 @@ public class BranchFU implements ProcessListener{
 				instruction = null;
 				return;
 			}*/
-			instruction = null;
+								
+			instruction = null;		
 			
 			Instruction tempIns = null;
 			int countIQ = Constants.IQ_COUNT;
@@ -69,6 +70,17 @@ public class BranchFU implements ProcessListener{
 						
 			//instruction = processor.decode.instruction;
 		
+			if(tempIns != null && (tempIns.opCode == Constants.OpCode.BZ || tempIns.opCode == Constants.OpCode.BNZ))
+			if(processor.register.getZReg() == -1){
+				return;
+			}
+			
+			if(processor.register.getZReg() != -1 && processor.register.getZFlag((int)processor.register.getZReg()) != -1)
+			{				
+				return;
+			}
+			
+			
 			if(tempIns != null && tempIns.opCode.ordinal() > 9)
 			{
 				processor.iQ.readIQEntry(IQInsAdd).inExecution = true;
@@ -79,91 +91,71 @@ public class BranchFU implements ProcessListener{
 				instruction = null;
 				return;
 			}	
-			
-			/*instruction = processor.decode.instruction;
-			if(instruction != null && instruction.opCode.ordinal() < 10){
-				instruction = null;
-				return;			
-			}		
-			
-			if(processor.isStalled){
-				instruction = null;
-				return;								
-		}*/
-						
-			//processor.decode.readSources();	
-			
-			if(instruction != null){			
 				
-//				if(instruction.src1 != null){
-//					
-//					if(instruction.src1Add!=null && processor.writeBack.instruction != null  
-//							&& processor.writeBack.instruction.dest != null
-//						   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){
-//					   instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-//					   processor.isStalled = false;
-//					}		
-//					
-//					if(instruction.src1Add!=null && processor.lSFU1.instruction != null  
-//							&& processor.lSFU1.instruction.dest != null
-//						   && processor.lSFU1.instruction.dest.intValue() == instruction.src1Add){
-//					   instruction.src1 = processor.lSFU1.result.temRread();
-//					   processor.isStalled = false;
-//					}	
-//			   }
-				
-				
-				
-				if(instruction != null){
-					
-					switch(instruction.opCode.ordinal()){						
-					case 10: //BZ, 							
-						if(processor.isZero){						
-							processor.fetch.clearStage(pc.temRread() + instruction.literal);
-							processor.decode.clearStage();	
-							processor.isBranchZ = false;
-						}
-						else{
-							processor.isBranchZ = false;
-						}
-						break;
-					case 11: //BNZ,			
-						if(!processor.isZero){						
-							processor.fetch.clearStage(pc.temRread() + instruction.literal);
-							processor.decode.clearStage();
-							processor.isBranchZ = false;
-						}
-						else{
-							processor.isBranchZ = false;
-						}
-						break;
-					case 12: //JUMP, 
-						processor.fetch.clearStage(instruction.literal + instruction.src1);
+			if(instruction != null){
+				pc.write(instruction.insPc);
+				switch(instruction.opCode.ordinal()){						
+				case 10: //BZ, 							
+					if(processor.register.getZFlag((int)processor.register.getZReg()) == 0){	
+						processor.rOB.setBranchTaken(instruction.opCode, true, instruction.insPc+instruction.literal);
+//						processor.fetch.clearStage(pc.temRread() + instruction.literal);
 						processor.decode.clearStage();
-						break;
-					case 13: //BAL, 
-						if(processor.decode.pc != null){
-							processor.register.setReg_X(processor.decode.pc.read());
-							}
-							processor.fetch.clearStage(instruction.src1+instruction.literal);
-							processor.decode.clearStage();
-						break;
-					case 14: //HALT
-						//processor.isHalt = true;
-						break;
+						processor.dispatch.clearStage();
+						processor.isStalled = true;
+						instruction.isROBCommit = true;
+//						processor.isBranchZ = false;
 					}
+//					else{
+//						processor.isBranchZ = false;
+//					}
+					break;
+				case 11: //BNZ,			
+					if(processor.register.getZFlag((int)processor.register.getZReg()) == 1){
+						processor.rOB.setBranchTaken(instruction.opCode, true, instruction.insPc+instruction.literal);
+//						processor.fetch.clearStage(pc.temRread() + instruction.literal);
+						processor.decode.clearStage();
+						processor.dispatch.clearStage();
+						processor.iQ.flushIQEntry(IQInsAdd + 1);
+						processor.isStalled = true;
+						instruction.isROBCommit = true;
+//						processor.isBranchZ = false;
+					}
+//					else{
+//						processor.isBranchZ = false;
+//					}
+					break;
+				case 12: //JUMP, 
+					processor.rOB.setBranchTaken(instruction.opCode, true, instruction.src1+instruction.literal);
+//					processor.fetch.clearStage(instruction.literal + instruction.src1);
+					processor.decode.clearStage();
+					processor.dispatch.clearStage();
+					processor.iQ.flushIQEntry(IQInsAdd + 1);
+					processor.isStalled = true;
+					instruction.isROBCommit = true;
+					break;
+				case 13: //BAL, 
+					if(processor.decode.pc != null){
+						    processor.register.setReg_X(processor.iQ.readIQEntry(IQInsAdd).insPc);
+//						    processor.register.setReg_X(processor.decode.pc.read());
+						}
+						processor.rOB.setBranchTaken(instruction.opCode, true, instruction.src1+instruction.literal);
+//						processor.fetch.clearStage(instruction.src1+instruction.literal);
+						processor.decode.clearStage();
+						processor.dispatch.clearStage();
+						processor.iQ.flushIQEntry(IQInsAdd + 1);
+						processor.isStalled = true;
+						instruction.isROBCommit = true;
+					break;
+				case 14: //HALT
+					//processor.isHalt = true;
+					break;
 				}
-				
-				
-				
-			}
-						
+			}				
 			
-					
 			if(instruction!=null && instruction.opCode == Constants.OpCode.HALT){				
-				processor.isHalt = true;				
-			}
-			pc.write(processor.decode.pc.read());	
+				processor.isHalt = true;
+				instruction.isROBCommit = true;
+			}				
 		}
 		catch(Exception e){
 			e.printStackTrace();	

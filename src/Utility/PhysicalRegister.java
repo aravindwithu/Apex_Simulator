@@ -4,6 +4,7 @@ public class PhysicalRegister {
 	private long regValue;	
 	private boolean isValid;
 	private boolean availability;
+	private int zFlag;
 	
 	/**
 	 * Constructor for Register initializes the registers.
@@ -13,6 +14,7 @@ public class PhysicalRegister {
 		regValue = 0;
 		isValid = false;
 		availability = true;
+		zFlag = -1;
 	}
 	
 	public long getRegValue() {
@@ -37,5 +39,13 @@ public class PhysicalRegister {
 	
 	public void setAvailability(boolean availabilityVal) {
 		availability = availabilityVal;
+	}
+	
+	public int getZFlag() {
+		return zFlag;
+	}
+	
+	public void setZFlag(int zFlagVal) {
+		zFlag = zFlagVal;
 	}
 }

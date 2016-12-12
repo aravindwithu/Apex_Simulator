@@ -58,12 +58,19 @@ public class IQ {
 			throw new Exception("Illegal IQ Index : "+index);}		
 	}
 	
-/*	public void updateIQEntry(Instruction[] data){
-		IQEntry = data;
-		for (Instruction instruction : data) {
-			//System.out.println(instruction);
+	
+	public void flushIQEntry(int index) throws Exception{
+		if(index >= 0 && index < Constants.IQ_COUNT){
+			for(int i = index; index < Constants.IQ_COUNT; i++){
+				processor.iQ.removeIQEntry(i);
+			}
 		}
-		}*/
+		else{
+			throw new Exception("Illegal IQ Index : "+index);
+		}
+	}
+	
+
 		
 	
 }

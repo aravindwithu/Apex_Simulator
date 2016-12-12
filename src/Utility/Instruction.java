@@ -24,6 +24,8 @@ public class Instruction {
 	public boolean inExecution = false;
 	public boolean isROBCommit = false;
 	public long insPc;
+	public long brnTrgAdd;
+	public boolean isBrnTaken;
 	
 	
 	/**

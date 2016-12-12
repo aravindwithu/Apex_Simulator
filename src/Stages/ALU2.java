@@ -84,9 +84,17 @@ public class ALU2 implements ProcessListener{
 				break;		*/
 			}
 			
-			if(result.temRread() == 0 && processor.isBranchZ){
+		   
+		   if(processor.register.getZReg() != -1 && instruction.destVal == 0){
+			   processor.register.setZFlag(instruction.dest.intValue(), 0);
+		   }
+		   else{
+			   processor.register.setZFlag(instruction.dest.intValue(), 1);
+		   }	
+		   
+			/*if(result.temRread() == 0 && processor.isBranchZ){
 				processor.isZero = true;
-			}
+			}*/
 		}
 	}
 
