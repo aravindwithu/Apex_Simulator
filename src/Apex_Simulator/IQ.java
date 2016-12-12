@@ -19,7 +19,7 @@ public class IQ {
 		}	
 		IQIndex = 0;
 	}
-	
+	//Write entry into IQ
 	public boolean writeIQEntry(Instruction data){
 		if(IQIndex >= 0 && IQIndex < Constants.REG_COUNT){		
 			IQEntry[IQIndex] = data;
@@ -28,7 +28,7 @@ public class IQ {
 		else{
 			  return false;}
 		}	
-	
+	//Read an entry from IQ
 	public Instruction readIQEntry(int index) throws Exception{
 		if(index >= 0 && index < Constants.IQ_COUNT){
 			if(this.IQEntry[index] != null){
@@ -39,7 +39,7 @@ public class IQ {
 		else{
 			throw new Exception("Illegal IQ Index : "+index);}
 	}
-	
+	//Remove an entry from IQ
 	public void removeIQEntry(int index) throws Exception{
 		if(index >= 0 && index < Constants.IQ_COUNT){
 			if(this.IQEntry[index] != null){
@@ -58,7 +58,7 @@ public class IQ {
 			throw new Exception("Illegal IQ Index : "+index);}		
 	}
 	
-	
+	//Flush corresponding IQ Entry
 	public void flushIQEntry(int index) throws Exception{
 		if(index >= 0 && index < Constants.IQ_COUNT){
 			for(int i = index; index < Constants.IQ_COUNT; i++){

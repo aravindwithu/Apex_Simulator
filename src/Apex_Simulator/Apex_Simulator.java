@@ -29,9 +29,8 @@ public class Apex_Simulator {
 		while(true){
 			System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			System.out.println("Enter command");
-			System.out.println("i->Initialize, \t s->Simulate <n>,\t d->Display,  ");
-			System.out.println("u->Set_URF_size <n>,\t m->Print_map_tables,\t iq->Print_IQ,");
-			System.out.println("rob->Print_ROB,urf->Print_URF,\t mem->Print_Memory <a1> <a2>,\t p->Print_Stats,\t e->exit: ");
+			System.out.println(" i->Initialize, \n s->Simulate <n>,\n d->Display, \n u->Set_URF_size <n>,\n m->Print_map_tables,\n iq->Print_IQ,");
+			System.out.println(" rob->Print_ROB,\n urf->Print_URF,\n mem->Print_Memory <a1> <a2>,\n p->Print_Stats,\n e->Exit ");
 			System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			String command = in.nextLine();
 			if(command.equalsIgnoreCase(Constants.INITIALIZE) || command.equalsIgnoreCase("i")){
@@ -64,9 +63,10 @@ public class Apex_Simulator {
 				int countFET = Constants.RAT_COUNT;
 				try {
 					for(int i=0; i < countFET; i++){
-						
 							System.out.print("R-"+i+" : P"+processor.register.getFrontEndPhyReg(i)+"\t");
-						
+							if ((i + 1) % 8 == 0) {
+								System.out.println();
+							}						
 					}
 				}
 				catch(Exception e){ e.printStackTrace();}
@@ -75,9 +75,10 @@ public class Apex_Simulator {
 				int countBET = Constants.RAT_COUNT;
 				try {
 					for(int i=0; i < countBET; i++){
-						
 							System.out.print("R-"+i+" : P"+processor.register.getBackEndPhyReg(i)+"\t");
-						
+							if ((i + 1) % 8 == 0) {
+								System.out.println();
+							}						
 					}
 				}
 				catch(Exception e){ e.printStackTrace();}
@@ -284,22 +285,6 @@ public class Apex_Simulator {
 		System.out.println(formatDisp(Constants.Stage.LSFU2)+"\n");		
 		System.out.println(formatDisp(Constants.Stage.WRITEBACK));
 		System.out.println(formatDisp(Constants.Stage.ROBCOMMIT));	
-		
-		
-		
-				
-		
-		
-		
-		
-				
-		
-		
-		//displayRegisters
-		
-				
-		//printMemory
-		
 	}
 
 }

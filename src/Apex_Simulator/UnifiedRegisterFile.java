@@ -77,35 +77,35 @@ public class UnifiedRegisterFile {
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}
-	
+	//make register valid to use that register for furthur operations
 	public void setIsRegValid(int index, boolean data) throws Exception{
 		if(index >= 0 && index < Constants.REG_COUNT){
 			Regs[index].setIsValid(data);}
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}
-	
+	//check if register is valid
 	public boolean getIsRegValid(int index) throws Exception{
 		if(index >= 0 && index < Constants.REG_COUNT){
 			return this.Regs[index].getIsValid();}
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}
-	
+	//make register available for further operations
 	public void setRegAvailability(int index, boolean data) throws Exception{
 		if(index >= 0 && index < Constants.REG_COUNT){
 			Regs[index].setAvailability(data);}
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}
-	
+	//get register availability for further operations
 	public boolean getRegAvailability(int index) throws Exception{
 		if(index >= 0 && index < Constants.REG_COUNT){
 			return this.Regs[index].getAvailability();}
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}
-	
+	//method to set front end physical register
 	public long setFrontEndPhyReg(int index) throws Exception{
 		if(index >= 0 && index < Constants.RAT_COUNT)
 		{
@@ -121,14 +121,14 @@ public class UnifiedRegisterFile {
 		else{
 			throw new Exception("Illegal register address : R"+index);}
 	}	
-	
+	//method to get front end physical register
 	public long getFrontEndPhyReg(int index) throws Exception{
 		if(index >= 0 && index < Constants.RAT_COUNT)
 			return this.frontEndRAT[index].getRATPhyReg();
 		else
 			throw new Exception("Illegal register address : R"+index);
 	}
-	
+	//method to set back end physical register
 	public void setBackEndPhyReg(int archReg, int phyReg) throws Exception{
 		if(archReg >= 0 && archReg < Constants.RAT_COUNT)
 		{
@@ -147,26 +147,26 @@ public class UnifiedRegisterFile {
 			throw new Exception("Illegal arch back end RAT register address : "+archReg);}
 		
 	}	
-	
+	//method to get back end physical register
 	public long getBackEndPhyReg(int index) throws Exception{
 		if(index >= 0 && index < Constants.RAT_COUNT)
 			return this.backEndRAT[index].getRATPhyReg();
 		else
 			throw new Exception("Illegal register address : R"+index);
 	}
-	
+	//method to get Z register
 	public long getZReg(){
 		return zReg.getRATPhyReg();
 	}
-	
+	//method to set Z register
 	public void setZReg(long data){
 		 zReg.setRATPhyReg(data);
 	}
-	
+	//method to set Z flag
 	public void setZFlag(int phyReg,int data){
 		Regs[phyReg].setZFlag(data);
 	}
-	
+	//method to get Z register
 	public int getZFlag(int phyReg){
 		if(Regs[phyReg].getZFlag() != -1){
 		return Regs[phyReg].getZFlag();}
@@ -174,15 +174,15 @@ public class UnifiedRegisterFile {
 			return -1;
 		}
 	}
-	
+	//method to set all front table entry
 	public void setAllFrontEntTable(RAT[] newRAT){
 		frontEndRAT = newRAT;
 	}
-	
+	//method to get allbackendtable entries
 	public RAT[] getAllBackEntTable(){
 		return backEndRAT;
 	}
-	
+	//method to flush back end table
 	public void clearBackEndTable(){
 		backEndRAT = new RAT[Constants.RAT_COUNT];
 		for(int i=0; i < Constants.RAT_COUNT; ++i){

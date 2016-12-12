@@ -19,7 +19,7 @@ public class ROB {
 		}		
 		ROBIndex = 0;
 	}
-	
+	//write an entry into ROB
 	public void writeROBEntry(Instruction data) throws Exception{
 		if(ROBIndex >= 0 && ROBIndex < Constants.ROB_COUNT)
 		{
@@ -29,18 +29,18 @@ public class ROB {
 		else{
 			throw new Exception("Illegal ROB index : "+ROBIndex);}
 	}
-	
+	//read an entry from ROB
 	public Instruction[] readROBEntry(){
 		return ROBEntry;
 	}
-	
+	//read an entry from ROB
 	public Instruction readROBEntry(int index) throws Exception{
 		if(index >= 0 && index < Constants.ROB_COUNT)
 			return this.ROBEntry[index];
 		else
 			throw new Exception("Illegal register address : R"+index);
 	}
-	
+	//remove an entry from ROB
 	public void removeROBEntry() throws Exception{
 		int index = 0;
 		if(index >= 0 && index < Constants.ROB_COUNT){
@@ -60,7 +60,7 @@ public class ROB {
 		else{
 			throw new Exception("Illegal IQ Index : "+index);}
 	}
-	
+	//set status field and target address if brach is taken
 	public void setBranchTaken(Constants.OpCode brnOpcode, boolean isBrnTaken, long brnTrgAdd){
 		for (Instruction rOB : ROBEntry) {
 			if(rOB.opCode == brnOpcode){
