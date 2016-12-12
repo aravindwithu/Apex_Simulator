@@ -47,8 +47,9 @@ public class ROB {
 			if(this.ROBEntry[index] != null){
 				int incIndex = Constants.ROB_COUNT - index -1;
 				for(int i = 1; i < incIndex; i++){
-					ROBEntry[index] = ROBEntry[index+i];
-					if(ROBEntry[index+i].opCode == null){
+					ROBEntry[index] = ROBEntry[i];
+					if(ROBEntry[i+1].opCode == null){
+						ROBEntry[i] = new Instruction();
 					  break;}
 					index++;
 				}				

@@ -29,8 +29,10 @@ public class ROBCommit implements ProcessListener{
 						if(processor.rOB.readROBEntry(0).isROBCommit)
 						{
 							processor.rOB.readROBEntry(0).isROBCommit = false;							
-							instruction = processor.rOB.readROBEntry(0);														
-							processor.register.setBackEndPhyReg(instruction.archdest.intValue(), instruction.dest.intValue());
+							instruction = processor.rOB.readROBEntry(0);	
+							if(instruction.opCode != Constants.OpCode.STORE){
+								processor.register.setBackEndPhyReg(instruction.archdest.intValue(), instruction.dest.intValue());
+							}
 							processor.rOB.removeROBEntry();
 						}	
 						else{
