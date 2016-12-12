@@ -88,57 +88,8 @@ public class ALU1 implements ProcessListener{
 									
 			if(instruction != null){
 			
-				pc.write(instruction.insPc);				
-				
-//				if(instruction.src1 != null){	
-//					if(instruction.src1FwdValIn == Constants.Stage.ALU2){
-//						
-//						if(instruction.src1Add!=null && processor.lSFU.instruction != null  
-//								&& processor.lSFU.instruction.dest != null
-//								   && processor.lSFU.instruction.dest.intValue() == instruction.src1Add
-//								   && processor.lSFU.instruction.opCode != Constants.OpCode.LOAD){
-//							   instruction.src1 = processor.lSFU.result.temRread();	
-//							   instruction.src1Stall = false;
-//						   }	
-//						
-//					}
-//					
-//					if(instruction.src1FwdValIn == Constants.Stage.LSFU){
-//						
-//						if( instruction.src1Add!=null && processor.writeBack.instruction != null  
-//								&& processor.writeBack.instruction.dest != null
-//								   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){					  
-//							   instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-//							   instruction.src1Stall = false;
-//						   }
-//						
-//					}
-					
-//				}
-//				if(instruction.src2 != null){	
-//					if(instruction.src2FwdValIn == Constants.Stage.ALU2){
-//						
-//						if(instruction.src2Add!=null && processor.lSFU.instruction != null 
-//								&& processor.lSFU.instruction.dest != null
-//								   && processor.lSFU.instruction.dest.intValue()  == instruction.src2Add
-//								   && processor.lSFU.instruction.opCode != Constants.OpCode.LOAD){
-//							   instruction.src2 = processor.lSFU.result.temRread();	
-//							   instruction.src2Stall = false;
-//						   }
-//						
-//					}
-					
-//					if(instruction.src2FwdValIn == Constants.Stage.LSFU){
-//						
-//						if(instruction.src2Add != null && processor.writeBack.instruction != null 
-//								&& processor.writeBack.instruction.dest != null
-//								   && processor.writeBack.instruction.dest.intValue()  == instruction.src2Add){
-//							   instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
-//							   instruction.src2Stall = false;
-//						   }
-//						
-//					}
-//				}
+				pc.write(instruction.insPc);
+
 			}	
 		}
 		catch(Exception e)

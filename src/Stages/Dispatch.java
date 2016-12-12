@@ -57,6 +57,7 @@ public class Dispatch implements ProcessListener {
 			try {
 				if(instruction != null){
 					if(instruction.src1Add != null){
+						System.out.println(instruction.src1Add.intValue());
 						instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
 						 if(!processor.register.getIsRegValid(instruction.src1Add.intValue())){
 							 instruction.src1 = (long)0;

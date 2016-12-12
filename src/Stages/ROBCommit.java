@@ -39,6 +39,8 @@ public class ROBCommit implements ProcessListener{
 								processor.fetch.clearStage(instruction.brnTrgAdd);
 								processor.rOB = new ROB();
 								processor.register.setAllFrontEntTable(processor.register.getAllBackEntTable());
+								processor.isStalled = false;
+								processor.register.clearBackEndTable();
 							}
 							else if(instruction.opCode != Constants.OpCode.STORE){
 								processor.register.setBackEndPhyReg(instruction.archdest.intValue(), instruction.dest.intValue());

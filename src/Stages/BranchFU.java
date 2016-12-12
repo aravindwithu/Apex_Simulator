@@ -70,16 +70,21 @@ public class BranchFU implements ProcessListener{
 						
 			//instruction = processor.decode.instruction;
 		
-			if(tempIns != null && (tempIns.opCode == Constants.OpCode.BZ || tempIns.opCode == Constants.OpCode.BNZ))
-			if(processor.register.getZReg() == -1){
-				return;
+			if(tempIns != null && (tempIns.opCode == Constants.OpCode.BZ || tempIns.opCode == Constants.OpCode.BNZ)){
+								
+				if(processor.register.getZReg() == -1 && processor.register.getZFlag((int)processor.register.getZReg()) == -1)
+				{				
+					return;
+				}			
+				
+				else if((processor.fALU1.instruction != null && processor.register.getZReg() == processor.fALU1.instruction.dest))
+				{
+					return;
+				}
+				
 			}
 			
-			if(processor.register.getZReg() != -1 && processor.register.getZFlag((int)processor.register.getZReg()) != -1)
-			{				
-				return;
-			}
-			
+		
 			
 			if(tempIns != null && tempIns.opCode.ordinal() > 9)
 			{
@@ -101,6 +106,9 @@ public class BranchFU implements ProcessListener{
 //						processor.fetch.clearStage(pc.temRread() + instruction.literal);
 						processor.decode.clearStage();
 						processor.dispatch.clearStage();
+						if(processor.iQ.readIQEntry(IQInsAdd+1).opCode != null){
+							processor.iQ.flushIQEntry(IQInsAdd + 1);
+							}
 						processor.isStalled = true;
 						instruction.isROBCommit = true;
 //						processor.isBranchZ = false;
@@ -115,9 +123,11 @@ public class BranchFU implements ProcessListener{
 //						processor.fetch.clearStage(pc.temRread() + instruction.literal);
 						processor.decode.clearStage();
 						processor.dispatch.clearStage();
+						if(processor.iQ.readIQEntry(IQInsAdd+1).opCode != null){
 						processor.iQ.flushIQEntry(IQInsAdd + 1);
+						}
 						processor.isStalled = true;
-						instruction.isROBCommit = true;
+//						instruction.isROBCommit = true;
 //						processor.isBranchZ = false;
 					}
 //					else{
@@ -129,22 +139,26 @@ public class BranchFU implements ProcessListener{
 //					processor.fetch.clearStage(instruction.literal + instruction.src1);
 					processor.decode.clearStage();
 					processor.dispatch.clearStage();
-					processor.iQ.flushIQEntry(IQInsAdd + 1);
+					if(processor.iQ.readIQEntry(IQInsAdd+1).opCode != null){
+						processor.iQ.flushIQEntry(IQInsAdd + 1);
+						}
 					processor.isStalled = true;
-					instruction.isROBCommit = true;
+//					instruction.isROBCommit = true;
 					break;
 				case 13: //BAL, 
-					if(processor.decode.pc != null){
-						    processor.register.setReg_X(processor.iQ.readIQEntry(IQInsAdd).insPc);
+					if(processor.decode.pc != null){						
+						    processor.register.setReg_X(instruction.insPc);
 //						    processor.register.setReg_X(processor.decode.pc.read());
 						}
 						processor.rOB.setBranchTaken(instruction.opCode, true, instruction.src1+instruction.literal);
 //						processor.fetch.clearStage(instruction.src1+instruction.literal);
 						processor.decode.clearStage();
 						processor.dispatch.clearStage();
-						processor.iQ.flushIQEntry(IQInsAdd + 1);
+						if(processor.iQ.readIQEntry(IQInsAdd+1).opCode != null){
+							processor.iQ.flushIQEntry(IQInsAdd + 1);
+							}
 						processor.isStalled = true;
-						instruction.isROBCommit = true;
+//						instruction.isROBCommit = true;
 					break;
 				case 14: //HALT
 					//processor.isHalt = true;
@@ -154,7 +168,7 @@ public class BranchFU implements ProcessListener{
 			
 			if(instruction!=null && instruction.opCode == Constants.OpCode.HALT){				
 				processor.isHalt = true;
-				instruction.isROBCommit = true;
+//				instruction.isROBCommit = true;
 			}				
 		}
 		catch(Exception e){

@@ -9,6 +9,8 @@ public class UnifiedRegisterFile {
 	private RAT []frontEndRAT = null;
 	private RAT []backEndRAT = null;
 	private RAT zReg = null;
+	private RAT xReg = null;
+	
 		
 	/**
 	 * Constructor for URF initializes the physical registers.
@@ -18,7 +20,10 @@ public class UnifiedRegisterFile {
 		Regs = new PhysicalRegister[Constants.REG_COUNT];
 		for(int i=0; i < Constants.REG_COUNT; ++i){
 			Regs[i] = new PhysicalRegister();			
-		}			
+		}	
+		System.out.println(Constants.REG_COUNT - 1);
+		Regs[Constants.REG_COUNT-1].setRegValue(Constants.START_ADDRESS);
+		Regs[Constants.REG_COUNT-1].setIsValid(true);
 		//reset all front end table
 		frontEndRAT = new RAT[Constants.RAT_COUNT];
 		for(int i=0; i < Constants.RAT_COUNT; ++i){
@@ -31,6 +36,7 @@ public class UnifiedRegisterFile {
 			}
 		
 		zReg = new RAT();
+		xReg = new RAT();
 	}
 	
 	/**
@@ -67,6 +73,7 @@ public class UnifiedRegisterFile {
 	 */
 	public long readReg(int index) throws Exception{
 		if(index >= 0 && index < Constants.REG_COUNT){
+			//System.out.println(Regs[index].getRegValue());
 			return this.Regs[index].getRegValue();}
 		else{
 			throw new Exception("Illegal register address : R"+index);}
@@ -177,5 +184,22 @@ public class UnifiedRegisterFile {
 		return backEndRAT;
 	}
 	
+	public void clearBackEndTable(){
+		backEndRAT = new RAT[Constants.RAT_COUNT];
+		for(int i=0; i < Constants.RAT_COUNT; ++i){
+			backEndRAT[i] = new RAT();
+			}
+		
+		zReg = new RAT();
+	}
+	
+	public long setXRegPhyReg(){
+		xReg.setRATPhyReg(Constants.REG_COUNT-1); 
+		return xReg.getRATPhyReg();
+	}
+	
+	public long getXRegPhyRegAdd(){
+		return Constants.REG_COUNT -1;
+	}
 	
 }

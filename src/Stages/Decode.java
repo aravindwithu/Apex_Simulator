@@ -57,7 +57,12 @@ public class Decode implements ProcessListener {
 				if(instruction != null){
 					if(instruction.src1Add != null){
 						instruction.archsrc1Add = instruction.src1Add;
+						if(instruction.opCode != Constants.OpCode.JUMP){
 						instruction.src1Add = processor.register.getFrontEndPhyReg(instruction.src1Add.intValue());
+						}
+						else{
+							instruction.src1Add = processor.register.getXRegPhyRegAdd();
+						}
 					}
 				
 					
@@ -73,12 +78,11 @@ public class Decode implements ProcessListener {
 					
 					if(instruction.dest != null){	
 						instruction.archdest = instruction.dest;
-						instruction.dest = processor.register.setFrontEndPhyReg(instruction.dest.intValue());	
-						
-						if(instruction.opCode.ordinal() > 9 && processor.dispatch.instruction != null){
-							processor.register.setZReg(processor.dispatch.instruction.dest.intValue());
-						}
-						
+						instruction.dest = processor.register.setFrontEndPhyReg(instruction.dest.intValue());						
+					}
+					
+					if(instruction.opCode.ordinal() > 9 && processor.dispatch.instruction != null){
+						processor.register.setZReg(processor.dispatch.instruction.dest.intValue());
 					}
 				
 				}

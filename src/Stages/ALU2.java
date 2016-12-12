@@ -85,10 +85,10 @@ public class ALU2 implements ProcessListener{
 			}
 			
 		   
-		   if(processor.register.getZReg() != -1 && instruction.destVal == 0){
+		   if(processor.register.getZReg() != -1 && instruction.destVal == 0 && processor.register.getZReg() == instruction.dest){
 			   processor.register.setZFlag(instruction.dest.intValue(), 0);
 		   }
-		   else{
+		   else if(processor.register.getZReg() != -1 && instruction.destVal != 0 && processor.register.getZReg() == instruction.dest){
 			   processor.register.setZFlag(instruction.dest.intValue(), 1);
 		   }	
 		   
