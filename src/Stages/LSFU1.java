@@ -47,7 +47,9 @@ public class LSFU1 implements ProcessListener {
 						    //processor.iQ.removeIQEntry(i);	
 							IQInsAdd = i;
 						    break;
-						}	
+						}else{
+							Processor.noIssueCount++;
+						}
 					}
 				else{
 					break;

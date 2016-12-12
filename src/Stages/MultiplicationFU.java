@@ -49,7 +49,9 @@ public class MultiplicationFU implements ProcessListener{
 							    //processor.iQ.removeIQEntry(i);	
 								IQInsAdd = i;
 							    break;
-							}	
+							}else{
+								Processor.noIssueCount++;
+							}
 						}
 					else{
 						break;

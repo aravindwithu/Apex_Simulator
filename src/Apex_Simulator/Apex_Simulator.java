@@ -26,8 +26,13 @@ public class Apex_Simulator {
 	 */
 	static void process(){
 		Scanner in = new Scanner(System.in);
-		while(true){			
-			System.out.println("Enter command (i->Initialize, s->Simulate <n>, d->Display, e->exit): ");			
+		while(true){
+			System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			System.out.println("Enter command");
+			System.out.println("i->Initialize, \t s->Simulate <n>,\t d->Display,  ");
+			System.out.println("u->Set_URF_size <n>,\t m->Print_map_tables,\t iq->Print_IQ,");
+			System.out.println("rob->Print_ROB,urf->Print_URF,\t mem->Print_Memory <a1> <a2>,\t p->Print_Stats,\t e->exit: ");
+			System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			String command = in.nextLine();
 			if(command.equalsIgnoreCase(Constants.INITIALIZE) || command.equalsIgnoreCase("i")){
 				processor = new Processor(INS_FILE);
@@ -36,7 +41,7 @@ public class Apex_Simulator {
 			else if(command.equalsIgnoreCase(Constants.DISPLAY) || command.equalsIgnoreCase("d")){
 				display();
 			}			
-			else if(command.contains(Constants.SIMULATE) || command.contains("s")){
+			else if(command.contains(Constants.SIMULATE)|| command.contains("s")){
 				try{
 					int n  = Integer.parseInt(command.split(" ")[1].trim());					
 
@@ -45,11 +50,113 @@ public class Apex_Simulator {
 					}					
 				} 
 				catch (Exception e){
-					//e.printStackTrace();
+					e.printStackTrace();
 					System.out.println("Please enter correct number of cycles.");
 				}
 				
 			} 
+			else if(command.equalsIgnoreCase("u")){
+				Constants.REG_COUNT = in.nextInt()+1;
+				System.out.println("URF Size has been set to "+ Constants.REG_COUNT+" including X Register");
+			}
+			else if(command.equalsIgnoreCase("m")){
+				System.out.println("------------------------------------------------Front End Table Entry----------------------------------------------------------------------------------------");
+				int countFET = Constants.RAT_COUNT;
+				try {
+					for(int i=0; i < countFET; i++){
+						
+							System.out.print("R-"+i+" : P"+processor.register.getFrontEndPhyReg(i)+"\t");
+						
+					}
+				}
+				catch(Exception e){ e.printStackTrace();}
+				System.out.println();
+				System.out.println("------------------------------------------------Back End Table Entry----------------------------------------------------------------------------------------");
+				int countBET = Constants.RAT_COUNT;
+				try {
+					for(int i=0; i < countBET; i++){
+						
+							System.out.print("R-"+i+" : P"+processor.register.getBackEndPhyReg(i)+"\t");
+						
+					}
+				}
+				catch(Exception e){ e.printStackTrace();}
+				System.out.println();
+				
+			}else if(command.equalsIgnoreCase("IQ")){
+				System.out.println("---------------------------------------------------IQ Entry-----------------------------------------------------------------------------------------");
+				int countIQ = Constants.IQ_COUNT;
+				try {
+					for(int i=0; i < countIQ; i++){
+						if(processor.iQ.readIQEntry(i).opCode != null){
+							System.out.print("IQ-"+i+" : "+processor.iQ.readIQEntry(i).toString()+"\n");}
+						else{
+							System.out.print("IQ-"+i+" : "+"Empty"+"\n");}
+					}
+				}
+				catch(Exception e){ e.printStackTrace();}
+				System.out.println();
+			}else if(command.equalsIgnoreCase("rob")){
+				System.out.println("---------------------------------------------------ROB Entry----------------------------------------------------------------------------------------");
+				int countROB = Constants.ROB_COUNT;
+				try {
+					for(int i=0; i < countROB; i++){
+						if(processor.rOB.readROBEntry(i).opCode != null){
+							System.out.println("ROB-"+i+" : "+processor.rOB.readROBEntry(i).toString()+"\t ROB Commit Status "+processor.rOB.readROBEntry(i).isROBCommit);}
+						else{
+							System.out.println("ROB-"+i+" : "+"Empty");}
+					}
+				}
+				catch(Exception e){ e.printStackTrace();}
+				System.out.println();
+			}else if(command.equalsIgnoreCase("urf")){
+				System.out.println("---------------------------------------------------URF Data-----------------------------------------------------------------------------------------");
+				int count = Constants.REG_COUNT - 1;
+				try {
+					for(int i=0; i < 8; i++){
+							System.out.print("P"+i+"  : "+processor.register.readReg(i)+"\t	");
+					}
+					System.out.print("\n");
+					for(int i=8; i < 16; i++){
+						System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
+					}			
+					System.out.print("\n");
+					//System.out.print("--------------------------------------------------BackendRAT---------------------------------------------------------------------------------------");
+					System.out.print("\n");
+					for(int i=16; i < 24; i++){
+						System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
+					}
+					System.out.print("\n");
+					for(int i=24; i < 32; i++){
+						System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
+					}
+					
+					System.out.println("X : "+processor.register.readReg(count)+"\n");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}else if(command.equalsIgnoreCase("mem")){
+				int address1 = in.nextInt();
+				int address2 = in.nextInt();
+				System.out.print("----------------------------------------------Memory Locations from a1 to a2-------------------------------------------------------------------------------");
+				List<Long> _100Memory = processor.memory.readFirst100(address1,address2);
+				for(int i=0; i < 10; i++){
+					System.out.println();
+					for(int j=0; j < 10; j++){
+						System.out.print("Mem["+(i*10+j)+"]"+" : " + _100Memory.get(i*10+j)+"\t");
+					}
+				}
+				System.out.println("\n--------------------------------------------------------------------------------------------------------------------------------------------");
+
+			}else if(command.equalsIgnoreCase("p")){
+				System.out.println("----------------------------------------------Pipeline Stats-------------------------------------------------------------------------------");
+				float CPI = (5 + Processor.INS_COUNT - 1)/Processor.INS_COUNT;
+				System.out.println("IPC :"+ 1/CPI);
+				System.out.println("Number of cycles for which dispatched has stalled : "+Processor.stallCount);
+				System.out.println("Cycles for which issues have not taken place : "+Processor.noIssueCount);
+				System.out.println("Number of LOAD instructions committed: " + Processor.loadCommitCount);
+				System.out.println("Number of STORE instructions committed: " + Processor.storeCommitCount);
+			}
 			else if(command.equalsIgnoreCase("exit") || command.equalsIgnoreCase("e")){
 				System.out.println("Apex simulator exited");
 				break;
@@ -178,96 +285,21 @@ public class Apex_Simulator {
 		System.out.println(formatDisp(Constants.Stage.WRITEBACK));
 		System.out.println(formatDisp(Constants.Stage.ROBCOMMIT));	
 		
-		System.out.println("---------------------------------------------------IQ Entry-----------------------------------------------------------------------------------------");
-		int countIQ = Constants.IQ_COUNT;
-		try {
-			for(int i=0; i < countIQ; i++){
-				if(processor.iQ.readIQEntry(i).opCode != null){
-					System.out.print("IQ-"+i+" : "+processor.iQ.readIQEntry(i).toString()+"\t");}
-				else{
-					System.out.print("IQ-"+i+" : "+"Empty"+"\t	");}
-			}
-		}
-		catch(Exception e){ e.printStackTrace();}
-		System.out.println();
-		
-				
-		System.out.println("------------------------------------------------Front End Table Entry----------------------------------------------------------------------------------------");
-		int countFET = Constants.RAT_COUNT;
-		try {
-			for(int i=0; i < countFET; i++){
-				
-					System.out.print("R-"+i+" : P"+processor.register.getFrontEndPhyReg(i)+"\t");
-				
-			}
-		}
-		catch(Exception e){ e.printStackTrace();}
-		System.out.println();
 		
 		
-		System.out.println("---------------------------------------------------ROB Entry----------------------------------------------------------------------------------------");
-		int countROB = Constants.ROB_COUNT;
-		try {
-			for(int i=0; i < countROB; i++){
-				if(processor.rOB.readROBEntry(i).opCode != null){
-					System.out.print("ROB-"+i+" : "+processor.rOB.readROBEntry(i).toString()+"\t");}
-				else{
-					System.out.print("ROB-"+i+" : "+"Empty"+"\t	");}
-			}
-		}
-		catch(Exception e){ e.printStackTrace();}
-		System.out.println();
 				
-		System.out.println("------------------------------------------------Back End Table Entry----------------------------------------------------------------------------------------");
-		int countBET = Constants.RAT_COUNT;
-		try {
-			for(int i=0; i < countBET; i++){
+		
+		
+		
+		
 				
-					System.out.print("R-"+i+" : P"+processor.register.getBackEndPhyReg(i)+"\t");
-				
-			}
-		}
-		catch(Exception e){ e.printStackTrace();}
-		System.out.println();
+		
 		
 		//displayRegisters
-		System.out.println("---------------------------------------------------URF Data-----------------------------------------------------------------------------------------");
-		int count = Constants.REG_COUNT - 1;
-		try {
-			for(int i=0; i < 8; i++){
-					System.out.print("P"+i+"  : "+processor.register.readReg(i)+"\t	");
-			}
-			System.out.print("\n");
-			for(int i=8; i < 16; i++){
-				System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
-			}			
-			System.out.print("\n");
-			//System.out.print("--------------------------------------------------BackendRAT---------------------------------------------------------------------------------------");
-			System.out.print("\n");
-			for(int i=16; i < 24; i++){
-				System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
-			}
-			System.out.print("\n");
-			for(int i=24; i < 32; i++){
-				System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
-			}
-			
-			System.out.println("X : "+processor.register.readReg(count)+"\n");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 				
 		//printMemory
-		System.out.print("----------------------------------------------First 100 Memory Locations-------------------------------------------------------------------------------");
-		/*List<Long> _100Memory = processor.memory.readFirst100();
-		for(int i=0; i < 10; i++){
-			System.out.println();
-			for(int j=0; j < 10; j++){
-				System.out.print("Mem["+(i*10+j)+"]"+" : " + _100Memory.get(i*10+j)+"\t");
-			}
-		}*/
-		System.out.println("\n--------------------------------------------------------------------------------------------------------------------------------------------");
-
+		
 	}
 
 }

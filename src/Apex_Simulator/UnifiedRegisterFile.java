@@ -21,7 +21,6 @@ public class UnifiedRegisterFile {
 		for(int i=0; i < Constants.REG_COUNT; ++i){
 			Regs[i] = new PhysicalRegister();			
 		}	
-		System.out.println(Constants.REG_COUNT - 1);
 		Regs[Constants.REG_COUNT-1].setRegValue(Constants.START_ADDRESS);
 		Regs[Constants.REG_COUNT-1].setIsValid(true);
 		//reset all front end table

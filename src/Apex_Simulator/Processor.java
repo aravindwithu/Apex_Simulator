@@ -34,7 +34,10 @@ public class Processor {
 	public boolean isStalled = false;
 	public List<CycleListener> cycleListener = new ArrayList<CycleListener>();
 	public List<ProcessListener> processListeners = new ArrayList<ProcessListener>();
-	
+	public static int noIssueCount = 0;
+	public static int loadCommitCount = 0;
+	public static int storeCommitCount = 0;
+	public static int stallCount = 0;
 	/**
 	 * Constructor for Processor initializes the Processor and also all the stages objects, memory, registers.
 	 * @param file of string type to be processed and relevant results are stored in instruction array list in memory.
@@ -138,11 +141,12 @@ public class Processor {
 				{			
 					if(chkInds.src1Add == lSFU1.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){
-						//isStalled = true;									
+						stallCount++;
 						chkInds.src1Stall = true;
 						}
 					if(chkInds.src2Add == lSFU1.instruction.dest){
 						//isStalled = true;					
+						stallCount++;
 						chkInds.src2Stall = true;
 						}			
 				}
@@ -169,7 +173,8 @@ public class Processor {
 						chkInds.src1Stall = true;
 						}
 					if(chkInds.src2Add == fALU1.instruction.dest){
-						//isStalled = true;					
+						//isStalled = true;
+						stallCount++;
 						chkInds.src2Stall = true;
 						}			
 				}
@@ -179,21 +184,16 @@ public class Processor {
 				{			
 					if(chkInds.src1Add == fALU2.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){
-						//isStalled = true;									
+						//isStalled = true;
+						stallCount++;
 						chkInds.src1Stall = true;
 						}
 					if(chkInds.src2Add == fALU2.instruction.dest){
-						//isStalled = true;					
+//						isStalled = true;
+						stallCount++;
 						chkInds.src2Stall = true;
 						}			
 				}	
-				
-//				if(chkInds != null && (chkInds.opCode == Constants.OpCode.BZ || chkInds.opCode == Constants.OpCode.BNZ)
-//						&& !isBranchZ){
-//					isStalled = true;	
-//					isZero = false;
-//					isBranchZ = true;
-//				}
 			}		
 		
 		}

@@ -57,6 +57,11 @@ public class WriteBack implements ProcessListener{
 				instructionList.add(processor.lSFU2.instruction);
 				LSFU1.getNextInstuction = -1;
 				processor.lSFU2.instruction = null;
+				if(processor.lSFU2.instruction.opCode.equals(Constants.OpCode.LOAD)){
+					Processor.loadCommitCount++;
+				}else if(processor.lSFU2.instruction.opCode.equals(Constants.OpCode.STORE)){
+					Processor.storeCommitCount++;
+				}
 			}
 			
 			if(instructionList.size() > 0){
@@ -75,9 +80,7 @@ public class WriteBack implements ProcessListener{
 						else if(instruction.opCode.ordinal() < Constants.OpCode.STORE.ordinal()){
 							processor.register.writeReg(instruction.dest.intValue(), instruction.destVal); // need to analse previous Fu and update register
 						}
-						//System.out.println(instruction.opCode + "-ol " + instruction.isROBCommit);
 						instruction.isROBCommit = true;
-						System.out.println(instruction.opCode+" " +instruction.dest + "-n " + instruction.isROBCommit);
 						++Processor.INS_COUNT;					
 					}
 				}

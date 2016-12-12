@@ -96,8 +96,8 @@ public class Memory {
 	 * readFirst100 method reads the first 100 memory locations
 	 * @param  stage of type Constants.Stage
 	 */
-	public List<Long> readFirst100(){
-		return readMemory(0, 100);
+	public List<Long> readFirst100(int a1, int a2){
+		return readMemory(a1, a2);
 	}
 	
 	/**

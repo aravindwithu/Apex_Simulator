@@ -20,8 +20,8 @@ public class Constants {
 	public static final String LITERAL_PREFIX = "#";
 	public static final int MEM_SIZE = 10000;
 	public static final int CACHE_SIZE = 10;
-	public static final int REG_COUNT = 33;	//32 Reg + 1 Reg X
-	public static final int RAT_COUNT = 16;
+	public static int REG_COUNT = 33;	//32 Reg + 1 Reg X
+	public static final int RAT_COUNT = 16;	
 	public static final int IQ_COUNT = 12;	
 	public static final int ROB_COUNT = 40;	
 	public static final long START_ADDRESS = 4000;	
