@@ -56,15 +56,22 @@ public class Dispatch implements ProcessListener {
 	public void readSources(){
 			try {
 				if(instruction != null){
-					if(instruction.src1Add != null && processor.register.getIsRegValid(instruction.src1Add.intValue())){
+					if(instruction.src1Add != null){
 						instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
+						 if(!processor.register.getIsRegValid(instruction.src1Add.intValue())){
+							 instruction.src1 = (long)0;
+						}
+						 
 					}
 					else{
 						instruction.src1 = null;
 					}
 					
-					if(instruction.src2Add != null && processor.register.getIsRegValid(instruction.src2Add.intValue())){
+					if(instruction.src2Add != null){
 						instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
+						if(!processor.register.getIsRegValid(instruction.src2Add.intValue())){
+							instruction.src2 = (long)0;
+						}
 					}
 					else{
 						instruction.src2 = null;

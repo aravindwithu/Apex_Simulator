@@ -2,9 +2,6 @@ package Stages;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.plaf.InsetsUIResource;
-
 import Apex_Simulator.Apex_Simulator;
 import Apex_Simulator.CycleListener;
 import Apex_Simulator.ProcessListener;
@@ -17,6 +14,7 @@ public class WriteBack implements ProcessListener{
 	public Processor processor;
 	public Instruction instruction;
 	public CycleListener pc;
+	public List<Instruction> instructionList;
 
 	CycleListener result;
 	
@@ -29,6 +27,7 @@ public class WriteBack implements ProcessListener{
 		result = new CycleListener(processor);
 		this.processor = processor;
 		processor.processListeners.add(this);
+		instructionList = new ArrayList<Instruction>();
 	}
 
 	/**
@@ -38,31 +37,28 @@ public class WriteBack implements ProcessListener{
 	 */
 	public void process() {
 		try {
-
-			List<Instruction> instructionList = new ArrayList<Instruction>();
-			if(processor.multiplicationFU.instruction != null && processor.mulResultFoundCheck==true){
-				System.out.println("inside write back stage");
-				instruction = processor.multiplicationFU.instruction;
-				System.out.println("MultiplicationFU.mulResult"+ MultiplicationFU.mulResult);
-				result.write(MultiplicationFU.mulResult);
-				pc.write(processor.multiplicationFU.pc.read());
-				Processor.mulCount = 0;
+			instructionList = new ArrayList<Instruction>();
+			if(processor.multiplicationFU.instruction != null && processor.multiplicationFU.mulCount == 3){
+				instructionList.add(processor.multiplicationFU.instruction);
+				processor.multiplicationFU.mulCount = 0;
 				processor.multiplicationFU.instruction = null;
 			}else if(processor.branchFU.instruction != null){
 				instructionList.add(processor.branchFU.instruction);
 			}else if(processor.fALU2.instruction != null){
 				instructionList.add(processor.fALU2.instruction);
 			}
+			else if(processor.lSFU2.instruction != null){
+				instructionList.add(processor.lSFU2.instruction);
+			}
 			
 			if(instructionList.size() > 0){
 				for (Instruction instructionObj : instructionList) {
 					instruction = instructionObj;
-					//pc.write(processor.multiplicationFU.pc.read()); need to analyse how pc vlaue can be taken form whch Fu
+					//pc.write(instruction.insPc);
 					if(instruction != null){
 						if(instruction.opCode == Constants.OpCode.HALT){
 							processor.cL.cycle++;
 							processor.memory.clearInstructions();
-							//processor.multiplicationFU.clearStage(); nned to analse previous FU and clear it
 							Apex_Simulator.display();
 							System.out.println("Aborting execution! HALT encountered.");
 							processor.isHalt = false;
@@ -89,6 +85,7 @@ public class WriteBack implements ProcessListener{
 		pc.write(0);
 		result.write(0);
 		instruction = null;
+		instructionList = null;
 	}
 	
 	/**
@@ -109,7 +106,11 @@ public class WriteBack implements ProcessListener{
 			return Constants.OpCode.IDLE.name();
 		}
 		else{
-			return instruction.toString();
+			String insString = "";
+			for (Instruction ins : instructionList) {
+				insString = insString + "	" + ins.toString();
+			}
+			return insString;
 		}
 	}
 }

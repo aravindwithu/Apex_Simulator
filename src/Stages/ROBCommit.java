@@ -23,18 +23,14 @@ public class ROBCommit implements ProcessListener{
 
 	public void process() {
 		try {
-			
 			instruction = null;
-			int countROB = Constants.ROB_COUNT;
-			
-			for(int i=0; i < countROB; i++){
-				if(processor.rOB.readROBEntry(i).opCode != null){
-						if(processor.rOB.readROBEntry(i).isROBCommit)
+			while(true){
+				if(processor.rOB.readROBEntry(0).opCode != null){
+						if(processor.rOB.readROBEntry(0).isROBCommit)
 						{
-							instruction = processor.rOB.readROBEntry(i);
-														
+							processor.rOB.readROBEntry(0).isROBCommit = false;							
+							instruction = processor.rOB.readROBEntry(0);														
 							processor.register.setBackEndPhyReg(instruction.archdest.intValue(), instruction.dest.intValue());
-							
 							processor.rOB.removeROBEntry();
 						}	
 						else{

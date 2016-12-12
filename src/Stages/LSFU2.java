@@ -32,8 +32,8 @@ public class LSFU2 implements ProcessListener {
 	public void process() {
 		try {			
 	
-				if(processor.lSFU.instruction != null){
-					instruction = processor.lSFU.instruction;
+				if(processor.lSFU1.instruction != null){
+					instruction = processor.lSFU1.instruction;
 					
 					if(instruction != null && instruction.opCode.ordinal() != 8 && instruction.opCode.ordinal() != 9){
 						instruction = null;
@@ -47,8 +47,7 @@ public class LSFU2 implements ProcessListener {
 						  }
 					}
 					
-					pc.write(processor.lSFU.pc.read());
-
+					pc.write(processor.lSFU1.pc.read());
 					switch(instruction.opCode.ordinal()){
 						case 8:
 							if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
@@ -56,13 +55,13 @@ public class LSFU2 implements ProcessListener {
 								instruction.destVal = instruction.src1+instruction.src2;
 							}else{								//LOAD rdest, rscr1, literal
 								result.write(instruction.src1 + instruction.literal);
-								instruction.destVal = instruction.src1+instruction.src2;
+								instruction.destVal = (long)(instruction.src1+instruction.literal);
 							}
 							break;
 						case 9:
 							if(instruction.isLiteral){
 								result.write(instruction.src2 + instruction.literal);
-								instruction.destVal = instruction.src1+instruction.src2;
+								instruction.destVal = instruction.src1+instruction.literal;
 							}else {
 								result.write(instruction.src1 + instruction.src2);
 								instruction.destVal = instruction.src1+instruction.src2;

@@ -32,20 +32,21 @@ public class ALU1 implements ProcessListener{
 	 */
 	public void process() {
 		try{
-			
 			instruction = null;
+			Instruction tempIns = null;
 			int countIQ = Constants.IQ_COUNT;
+			int IQInsAdd = 0;
 	
 			for(int i=0; i < countIQ; i++){
 				if(processor.iQ.readIQEntry(i).opCode != null){
-						if((processor.iQ.readIQEntry(i).opCode.ordinal() < 8 && processor.iQ.readIQEntry(i).opCode.ordinal() != 2)
-							&& !processor.iQ.readIQEntry(i).inExecution
+						if( !processor.iQ.readIQEntry(i).inExecution
 							&& !processor.iQ.readIQEntry(i).src1Stall
 							&& !processor.iQ.readIQEntry(i).src2Stall)
 						{
-							processor.iQ.readIQEntry(i).inExecution = true;
-						    instruction = processor.iQ.readIQEntry(i);						    
-						    processor.iQ.removeIQEntry(i);						   
+							//processor.iQ.readIQEntry(i).inExecution = true;
+							tempIns = processor.iQ.readIQEntry(i);						    
+						    //processor.iQ.removeIQEntry(i);	
+							IQInsAdd = i;
 						    break;
 						}	
 					}
@@ -55,19 +56,24 @@ public class ALU1 implements ProcessListener{
 				
 			}
 			
-			if(instruction == null)
-			{
-				return;				
+			if(tempIns == null){	
+				instruction = null;
+				return;
 			}
-		
-			
+						
 			//instruction = processor.decode.instruction;
 		
-			/*if(instruction != null && instruction.opCode.ordinal() >= 10)
+			if(tempIns != null && tempIns.opCode.ordinal() < 8 && tempIns.opCode.ordinal() != 2)
 			{
+				processor.iQ.readIQEntry(IQInsAdd).inExecution = true;
+				instruction = tempIns;
+				processor.iQ.removeIQEntry(IQInsAdd);		
+			}
+			else{
 				instruction = null;
-				return;			
-			}*/
+				return;
+			}
+			
 			
 			/*if(instruction != null){
 				 if(instruction.src1Stall || instruction.src2Stall){
@@ -84,7 +90,7 @@ public class ALU1 implements ProcessListener{
 			
 				pc.write(instruction.insPc);				
 				
-				if(instruction.src1 != null){	
+//				if(instruction.src1 != null){	
 //					if(instruction.src1FwdValIn == Constants.Stage.ALU2){
 //						
 //						if(instruction.src1Add!=null && processor.lSFU.instruction != null  
@@ -96,20 +102,20 @@ public class ALU1 implements ProcessListener{
 //						   }	
 //						
 //					}
+//					
+//					if(instruction.src1FwdValIn == Constants.Stage.LSFU){
+//						
+//						if( instruction.src1Add!=null && processor.writeBack.instruction != null  
+//								&& processor.writeBack.instruction.dest != null
+//								   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){					  
+//							   instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
+//							   instruction.src1Stall = false;
+//						   }
+//						
+//					}
 					
-					if(instruction.src1FwdValIn == Constants.Stage.LSFU){
-						
-						if( instruction.src1Add!=null && processor.writeBack.instruction != null  
-								&& processor.writeBack.instruction.dest != null
-								   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){					  
-							   instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-							   instruction.src1Stall = false;
-						   }
-						
-					}
-					
-				}
-				if(instruction.src2 != null){	
+//				}
+//				if(instruction.src2 != null){	
 //					if(instruction.src2FwdValIn == Constants.Stage.ALU2){
 //						
 //						if(instruction.src2Add!=null && processor.lSFU.instruction != null 
@@ -122,17 +128,17 @@ public class ALU1 implements ProcessListener{
 //						
 //					}
 					
-					if(instruction.src2FwdValIn == Constants.Stage.LSFU){
-						
-						if(instruction.src2Add != null && processor.writeBack.instruction != null 
-								&& processor.writeBack.instruction.dest != null
-								   && processor.writeBack.instruction.dest.intValue()  == instruction.src2Add){
-							   instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
-							   instruction.src2Stall = false;
-						   }
-						
-					}
-				}
+//					if(instruction.src2FwdValIn == Constants.Stage.LSFU){
+//						
+//						if(instruction.src2Add != null && processor.writeBack.instruction != null 
+//								&& processor.writeBack.instruction.dest != null
+//								   && processor.writeBack.instruction.dest.intValue()  == instruction.src2Add){
+//							   instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
+//							   instruction.src2Stall = false;
+//						   }
+//						
+//					}
+//				}
 			}	
 		}
 		catch(Exception e)

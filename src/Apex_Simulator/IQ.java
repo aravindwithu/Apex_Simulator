@@ -55,11 +55,7 @@ public class IQ {
 			}
 		}
 		else{
-			throw new Exception("Illegal IQ Index : "+index);}
-		for (Instruction instruction : IQEntry) {
-			if(instruction.opCode != null){
-			System.out.println(instruction);}
-		}
+			throw new Exception("Illegal IQ Index : "+index);}		
 	}
 	
 /*	public void updateIQEntry(Instruction[] data){

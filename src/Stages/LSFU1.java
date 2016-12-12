@@ -6,7 +6,7 @@ import Apex_Simulator.ProcessListener;
 import Utility.Constants;
 import Utility.Instruction;
 
-public class LSFU implements ProcessListener {
+public class LSFU1 implements ProcessListener {
 	
 	public Processor processor;
 	public Instruction instruction;
@@ -18,7 +18,7 @@ public class LSFU implements ProcessListener {
 	 * Constructor for Memory stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
-	public LSFU(Processor processor) {
+	public LSFU1(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
 		this.processor = processor;
@@ -31,19 +31,20 @@ public class LSFU implements ProcessListener {
 	 */
 	public void process() {
 		try {			
-			instruction = null;
+			Instruction tempIns = null;
 			int countIQ = Constants.IQ_COUNT;
+			int IQInsAdd = 0;
 	
 			for(int i=0; i < countIQ; i++){
 				if(processor.iQ.readIQEntry(i).opCode != null){
-					if(instruction != null && instruction.opCode.ordinal() != 8 && instruction.opCode.ordinal() != 9
-							&& !processor.iQ.readIQEntry(i).inExecution
+						if( !processor.iQ.readIQEntry(i).inExecution
 							&& !processor.iQ.readIQEntry(i).src1Stall
 							&& !processor.iQ.readIQEntry(i).src2Stall)
 						{
-							processor.iQ.readIQEntry(i).inExecution = true;
-						    instruction = processor.iQ.readIQEntry(i);						    
-						    processor.iQ.removeIQEntry(i);						   
+							//processor.iQ.readIQEntry(i).inExecution = true;
+							tempIns = processor.iQ.readIQEntry(i);						    
+						    //processor.iQ.removeIQEntry(i);	
+							IQInsAdd = i;
 						    break;
 						}	
 					}
@@ -53,17 +54,26 @@ public class LSFU implements ProcessListener {
 				
 			}
 			
-			if(instruction == null)
-			{
-				return;				
+			if(tempIns == null){	
+				instruction = null;
+				return;
 			}
+						
+			//instruction = processor.decode.instruction;
+		
+			if(tempIns != null && (tempIns.opCode.ordinal() == 8 || tempIns.opCode.ordinal() == 9))
+			{
+				processor.iQ.readIQEntry(IQInsAdd).inExecution = true;
+				instruction = tempIns;
+				processor.iQ.removeIQEntry(IQInsAdd);		
+			}
+			else{
+				instruction = null;
+				return;
+			}
+			
 				/*if(processor.iQ.instruction != null){
-					instruction = processor.decode.instruction;
-					
-					if(instruction != null && instruction.opCode.ordinal() != 8 && instruction.opCode.ordinal() != 9){
-						instruction = null;
-						return;			
-					}
+					instruction = processor.decode.instruction;			
 					
 					if(instruction != null){
 						 if(instruction.src1Stall || instruction.src2Stall){

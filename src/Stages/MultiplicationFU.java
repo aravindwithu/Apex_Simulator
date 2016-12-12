@@ -11,8 +11,7 @@ public class MultiplicationFU implements ProcessListener{
 	public Processor processor;
 	public Instruction instruction;
 	public CycleListener pc;
-	public static int mulResult;
-	public static long mulPCValue;
+	public int mulCount;
 	//Latch pc;
 	CycleListener result;
 	/**
@@ -32,128 +31,74 @@ public class MultiplicationFU implements ProcessListener{
 	 * should be flushed on a taken branch. The zero flag (Z) is set only by arithmetic instructions in ALU. 
 	 */
 	
-	
 	public void process() {
-		instruction = null;
+		try{
+			if(processor.multiplicationFU.mulCount == 0){				
+				Instruction tempIns = null;
+				int countIQ = Constants.IQ_COUNT;
+				int IQInsAdd = 0;
 		
-				if(Processor.mulCount == 0){
-					int countIQ = Constants.IQ_COUNT;
-					//instruction = processor.decode.instruction;
-					try{
-					for(int i=0; i < countIQ; i++){
-			               //false checkin ALU1
-							if(processor.iQ.readIQEntry(i).opCode != null){
-									if((processor.iQ.readIQEntry(i).opCode.ordinal() == 2)
-										&& !processor.iQ.readIQEntry(i).inExecution
-										&& !processor.iQ.readIQEntry(i).src1Stall
-										&& !processor.iQ.readIQEntry(i).src2Stall)
-									{
-									   processor.iQ.readIQEntry(i).inExecution = true;
-									   instruction = processor.iQ.readIQEntry(i);
-									   break;
-									}	
-								}
-							else{
-								break;
-							}
-							
+				for(int i=0; i < countIQ; i++){
+					if(processor.iQ.readIQEntry(i).opCode != null){
+							if( !processor.iQ.readIQEntry(i).inExecution
+								&& !processor.iQ.readIQEntry(i).src1Stall
+								&& !processor.iQ.readIQEntry(i).src2Stall)
+							{
+								//processor.iQ.readIQEntry(i).inExecution = true;
+								tempIns = processor.iQ.readIQEntry(i);						    
+							    //processor.iQ.removeIQEntry(i);	
+								IQInsAdd = i;
+							    break;
+							}	
 						}
-					}catch(Exception e){
-						e.printStackTrace();
+					else{
+						break;
 					}
-				
-				}
-				
-				if(instruction == null)
-				{
-					return;				
-				}
-				/*if(instruction != null && instruction.opCode.ordinal() != 2)
-				{
-					instruction = null;
-					return;			
-				}
-				
-				if(instruction != null){
-					 if(instruction.src1Stall || instruction.src2Stall){
-						 instruction = null;
-							return;	
-					  }
-				}*/
-						
-			//	processor.decode.readSources();	
-				if(instruction != null){
 					
-					if(instruction.src1 != null){	
-						if(instruction.src1FwdValIn == Constants.Stage.ALU2){
-							if(instruction.src1Add!=null && processor.lSFU.instruction != null  
-									&& processor.lSFU.instruction.dest != null
-									   && processor.lSFU.instruction.dest.intValue() == instruction.src1Add
-									   && processor.lSFU.instruction.opCode != Constants.OpCode.LOAD){
-								   instruction.src1 = processor.lSFU.result.temRread();	
-								   instruction.src1Stall = false;
-							   }	
-							
-						}
-						
-						if(instruction.src1FwdValIn == Constants.Stage.LSFU){
-							if( instruction.src1Add!=null && processor.writeBack.instruction != null  
-									&& processor.writeBack.instruction.dest != null
-									   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){					  
-								   try {
-									instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								   instruction.src1Stall = false;
-							   }
-							
-						}
-						
-					}
-					if(instruction.src2 != null){	
-						if(instruction.src2FwdValIn == Constants.Stage.ALU2){
-							if(instruction.src2Add!=null && processor.lSFU!=null && processor.lSFU.instruction != null 
-									&& processor.lSFU.instruction.dest != null
-									   && processor.lSFU.instruction.dest.intValue()  == instruction.src2Add
-									   && processor.lSFU.instruction.opCode != Constants.OpCode.LOAD){
-								   instruction.src2 = processor.lSFU.result.temRread();	
-								   instruction.src2Stall = false;
-							   }
-							
-						}
-						
-						if(instruction.src2FwdValIn == Constants.Stage.LSFU){
-							if(instruction.src2Add != null && processor.writeBack.instruction != null 
-									&& processor.writeBack.instruction.dest != null
-									   && processor.writeBack.instruction.dest.intValue()  == instruction.src2Add){
-								   try {
-									instruction.src2 = processor.register.readReg(instruction.src2Add.intValue());
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								   instruction.src2Stall = false;
-							   }
-							
-						}
-					}
-					if(Processor.mulCount!=0){
-						pc.write(mulPCValue);
-					}else{
-						mulPCValue = processor.decode.pc.read();
-						pc.write(processor.decode.pc.read());
-					}
-					if(Processor.mulCount == 2){
-						//mulResult = (int)(instruction.src1*instruction.src2); nned to check why instruction's values are not obtained
-						
-						processor.mulResultFoundCheck = true;
-					}else{
-						Processor.mulCount++;
-					}
 				}
+				
+				if(tempIns == null){	
+					instruction = null;
+					return;
+				}
+							
+				//instruction = processor.decode.instruction;
+						
+				if(tempIns != null && tempIns.opCode.ordinal() == 2)
+				{
+					processor.iQ.readIQEntry(IQInsAdd).inExecution = true;
+					instruction = tempIns;
+					processor.iQ.removeIQEntry(IQInsAdd);		
+				}
+				else{
+					instruction = null;
+					return;
+				}	
+									
+				//	processor.decode.readSources();	
+				
+				if(instruction != null){				
+
+					pc.write(instruction.insPc);
+						
+					
+				}			
 			}
+			if(processor.multiplicationFU.mulCount == 2){
+				//mulResult = (int)(instruction.src1*instruction.src2); nned to check why instruction's values are not obtained
+				result.write(instruction.src1*instruction.src2);
+				instruction.destVal = instruction.src1*instruction.src2;
+				processor.multiplicationFU.mulCount++;
+			}
+			else{
+				processor.multiplicationFU.mulCount++;
+			}
+			
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}	
+	}
 	/**
 	 * clearStage method clears the BranchFU stage.
 	 */

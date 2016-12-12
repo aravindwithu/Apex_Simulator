@@ -43,14 +43,6 @@ public class Instruction {
 		return result;
 	}
 	
-	
-	
-	
-
-	
-	
-	
-	
 	/**
 	 * toString method returns the instruction format to the given opcode.
 	 * @return String of the instruction or IDLE constants

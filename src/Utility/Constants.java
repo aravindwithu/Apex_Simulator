@@ -13,7 +13,7 @@ public class Constants {
 	 * Stage enum contains Stage constants of different instructions.
 	 */
 	public enum Stage{
-		FETCH, DECODE, DISPATCH, ALU1,  BRANCHFU, ALU2, MULTIPLICATIONFU, LSFU, WRITEBACK, ROBCOMMIT,EMPTY, LSFU2
+		FETCH, DECODE, DISPATCH, ALU1,  ALU2, BRANCHFU, MULTIPLICATIONFU, LSFU1, LSFU2, WRITEBACK, ROBCOMMIT, EMPTY
 	}
 	
 	public static final String REG_PREFIX = "R";

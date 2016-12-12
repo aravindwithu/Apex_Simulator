@@ -48,9 +48,9 @@ public class ROB {
 				int incIndex = Constants.ROB_COUNT - index -1;
 				for(int i = 1; i < incIndex; i++){
 					ROBEntry[index] = ROBEntry[index+i];
-				if(ROBEntry[index+i].opCode == null){
-				  break;}
-				index++;
+					if(ROBEntry[index+i].opCode == null){
+					  break;}
+					index++;
 				}				
 				ROBEntry[Constants.ROB_COUNT - 1] = new Instruction();				
 				ROBIndex--;
@@ -58,9 +58,5 @@ public class ROB {
 		}
 		else{
 			throw new Exception("Illegal IQ Index : "+index);}
-		for (Instruction instruction : ROBEntry) {
-			if(instruction.opCode != null){
-			System.out.println(instruction);}
-		}
 	}
 }

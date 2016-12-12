@@ -9,7 +9,6 @@ import Utility.Instruction;
 
 public class Processor {	
 	public static int INS_COUNT;
-	public static int mulCount;
 	public boolean mulResultFoundCheck = false;
 	public Memory memory;
 	public UnifiedRegisterFile register;
@@ -22,7 +21,7 @@ public class Processor {
 	public BranchFU branchFU;
 	//public Delay delay;
 	//public MemoryStage memoryStage;
-	public LSFU lSFU;
+	public LSFU1 lSFU1;
 	public LSFU2 lSFU2;
 	public MultiplicationFU multiplicationFU; 
 	public WriteBack writeBack;
@@ -47,13 +46,15 @@ public class Processor {
 		rOB = new ROB();
 		rOBCommit = new ROBCommit(this);
 		writeBack = new WriteBack(this);
+		
 		//memoryStage = new MemoryStage(this);
 		//delay = new Delay(this);
-		lSFU2 = new LSFU2(this);
-		fALU2 = new ALU2(this);
-		branchFU = new BranchFU(this);
+		
+		lSFU2 = new LSFU2(this);		
+		lSFU1 = new LSFU1(this);
 		multiplicationFU = new MultiplicationFU(this);
-		lSFU = new LSFU(this);
+		branchFU = new BranchFU(this);
+		fALU2 = new ALU2(this);
 		fALU1 = new ALU1(this);	
 		dispatch = new Dispatch(this);
 		decode = new Decode(this);
@@ -105,28 +106,42 @@ public class Processor {
 				chkInds.src1Stall = false;
 				chkInds.src2Stall = false;				
 				
+				if(writeBack.instruction != null && chkInds != null && writeBack.instruction.dest != null
+						&& (chkInds.src1Add == writeBack.instruction.dest || chkInds.src2Add == writeBack.instruction.dest))
+				{
+					if(chkInds.src1Add == writeBack.instruction.dest
+							&& chkInds.opCode != Constants.OpCode.STORE){					
+						    chkInds.src1FwdValIn = Constants.Stage.WRITEBACK;
+						    chkInds.src1 = writeBack.instruction.destVal;
+						}
+					if(chkInds.src2Add == writeBack.instruction.dest){					
+						chkInds.src2FwdValIn = Constants.Stage.WRITEBACK;		
+						chkInds.src2 = writeBack.instruction.destVal;
+						}			
+				}
+				
 				if(lSFU2.instruction != null && chkInds != null && lSFU2.instruction.dest != null
 						&& (chkInds.src1Add == lSFU2.instruction.dest || chkInds.src2Add == lSFU2.instruction.dest))
 				{
 					if(chkInds.src1Add == lSFU2.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){					
 						    chkInds.src1FwdValIn = Constants.Stage.LSFU2;
-						    chkInds.src1 = fALU2.instruction.destVal;
+						    chkInds.src1 = lSFU2.instruction.destVal;
 						}
 					if(chkInds.src2Add == lSFU2.instruction.dest){					
 						chkInds.src2FwdValIn = Constants.Stage.LSFU2;		
-						chkInds.src2 = fALU2.instruction.destVal;
+						chkInds.src2 = lSFU2.instruction.destVal;
 						}			
 				}
 				
-				if(lSFU.instruction != null && chkInds != null && lSFU.instruction.dest != null)
+				if(lSFU1.instruction != null && chkInds != null && lSFU1.instruction.dest != null)
 				{			
-					if(chkInds.src1Add == lSFU.instruction.dest
+					if(chkInds.src1Add == lSFU1.instruction.dest
 							&& chkInds.opCode != Constants.OpCode.STORE){
 						isStalled = true;									
 						chkInds.src1Stall = true;
 						}
-					if(chkInds.src2Add == lSFU.instruction.dest){
+					if(chkInds.src2Add == lSFU1.instruction.dest){
 						isStalled = true;					
 						chkInds.src2Stall = true;
 						}			

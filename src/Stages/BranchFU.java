@@ -37,38 +37,125 @@ public class BranchFU implements ProcessListener{
 				instruction = null;
 				return;
 			}*/
+			instruction = null;
 			
-			instruction = processor.decode.instruction;
+			Instruction tempIns = null;
+			int countIQ = Constants.IQ_COUNT;
+			int IQInsAdd = 0;
+	
+			for(int i=0; i < countIQ; i++){
+				if(processor.iQ.readIQEntry(i).opCode != null){
+						if( !processor.iQ.readIQEntry(i).inExecution
+							&& !processor.iQ.readIQEntry(i).src1Stall
+							&& !processor.iQ.readIQEntry(i).src2Stall)
+						{
+							//processor.iQ.readIQEntry(i).inExecution = true;
+							tempIns = processor.iQ.readIQEntry(i);						    
+						    //processor.iQ.removeIQEntry(i);	
+							IQInsAdd = i;
+						    break;
+						}	
+					}
+				else{
+					break;
+				}
+				
+			}
+			
+			if(tempIns == null){	
+				instruction = null;
+				return;
+			}
+						
+			//instruction = processor.decode.instruction;
+		
+			if(tempIns != null && tempIns.opCode.ordinal() > 9)
+			{
+				processor.iQ.readIQEntry(IQInsAdd).inExecution = true;
+				instruction = tempIns;
+				processor.iQ.removeIQEntry(IQInsAdd);		
+			}
+			else{
+				instruction = null;
+				return;
+			}	
+			
+			/*instruction = processor.decode.instruction;
 			if(instruction != null && instruction.opCode.ordinal() < 10){
 				instruction = null;
 				return;			
-			}	
+			}		
 			
 			if(processor.isStalled){
 				instruction = null;
-				return;									
-		}
+				return;								
+		}*/
 						
 			//processor.decode.readSources();	
 			
 			if(instruction != null){			
 				
-				if(instruction.src1 != null){
+//				if(instruction.src1 != null){
+//					
+//					if(instruction.src1Add!=null && processor.writeBack.instruction != null  
+//							&& processor.writeBack.instruction.dest != null
+//						   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){
+//					   instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
+//					   processor.isStalled = false;
+//					}		
+//					
+//					if(instruction.src1Add!=null && processor.lSFU1.instruction != null  
+//							&& processor.lSFU1.instruction.dest != null
+//						   && processor.lSFU1.instruction.dest.intValue() == instruction.src1Add){
+//					   instruction.src1 = processor.lSFU1.result.temRread();
+//					   processor.isStalled = false;
+//					}	
+//			   }
+				
+				
+				
+				if(instruction != null){
 					
-					if(instruction.src1Add!=null && processor.writeBack.instruction != null  
-							&& processor.writeBack.instruction.dest != null
-						   && processor.writeBack.instruction.dest.intValue() == instruction.src1Add){
-					   instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-					   processor.isStalled = false;
-					}		
-					
-					if(instruction.src1Add!=null && processor.lSFU.instruction != null  
-							&& processor.lSFU.instruction.dest != null
-						   && processor.lSFU.instruction.dest.intValue() == instruction.src1Add){
-					   instruction.src1 = processor.lSFU.result.temRread();
-					   processor.isStalled = false;
-					}	
-			   }
+					switch(instruction.opCode.ordinal()){						
+					case 10: //BZ, 							
+						if(processor.isZero){						
+							processor.fetch.clearStage(pc.temRread() + instruction.literal);
+							processor.decode.clearStage();	
+							processor.isBranchZ = false;
+						}
+						else{
+							processor.isBranchZ = false;
+						}
+						break;
+					case 11: //BNZ,			
+						if(!processor.isZero){						
+							processor.fetch.clearStage(pc.temRread() + instruction.literal);
+							processor.decode.clearStage();
+							processor.isBranchZ = false;
+						}
+						else{
+							processor.isBranchZ = false;
+						}
+						break;
+					case 12: //JUMP, 
+						processor.fetch.clearStage(instruction.literal + instruction.src1);
+						processor.decode.clearStage();
+						break;
+					case 13: //BAL, 
+						if(processor.decode.pc != null){
+							processor.register.setReg_X(processor.decode.pc.read());
+							}
+							processor.fetch.clearStage(instruction.src1+instruction.literal);
+							processor.decode.clearStage();
+						break;
+					case 14: //HALT
+						//processor.isHalt = true;
+						break;
+					}
+				}
+				
+				
+				
 			}
 						
 			
