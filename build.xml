@@ -5,6 +5,7 @@
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="Apex_Simulator">
     <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../Applications/Eclipse.app/Contents/Eclipse/"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
@@ -47,15 +48,9 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="Main (1)">
-        <java classname="Main.Main" failonerror="true" fork="yes">
-            <arg line="ldinstructions.txt"/>
-            <classpath refid="Apex_Simulator.classpath"/>
-        </java>
-    </target>
-    <target name="Main (3)">
-        <java classname="Apex_Simulator.Main" failonerror="true" fork="yes">
-            <arg line="ldinstructions.txt"/>
+    <target name="Apex_Simulator">
+        <java classname="Apex_Simulator.Apex_Simulator" failonerror="true" fork="yes">
+            <arg line="T.txt"/>
             <classpath refid="Apex_Simulator.classpath"/>
         </java>
     </target>
