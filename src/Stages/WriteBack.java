@@ -56,12 +56,12 @@ public class WriteBack implements ProcessListener{
 			if(processor.lSFU2.instruction != null && LSFU1.getNextInstuction == 1){
 				instructionList.add(processor.lSFU2.instruction);
 				LSFU1.getNextInstuction = -1;
-				processor.lSFU2.instruction = null;
 				if(processor.lSFU2.instruction.opCode.equals(Constants.OpCode.LOAD)){
 					Processor.loadCommitCount++;
 				}else if(processor.lSFU2.instruction.opCode.equals(Constants.OpCode.STORE)){
 					Processor.storeCommitCount++;
 				}
+				processor.lSFU2.instruction = null;
 			}
 			
 			if(instructionList.size() > 0){

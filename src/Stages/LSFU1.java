@@ -84,7 +84,7 @@ public class LSFU1 implements ProcessListener {
 			case 9:
 				if(instruction.isLiteral){
 					result.write(instruction.src2 + instruction.literal);
-					instruction.destVal = instruction.src1+instruction.literal;
+					instruction.destVal = instruction.src2+instruction.literal;
 				}else {
 					result.write(instruction.src1 + instruction.src2);
 					instruction.destVal = instruction.src1+instruction.src2;

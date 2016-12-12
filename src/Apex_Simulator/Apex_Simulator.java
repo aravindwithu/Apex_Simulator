@@ -113,39 +113,37 @@ public class Apex_Simulator {
 			}else if(command.equalsIgnoreCase("urf")){
 				System.out.println("---------------------------------------------------URF Data-----------------------------------------------------------------------------------------");
 				int count = Constants.REG_COUNT - 1;
+				//int size = Constants.u
 				try {
-					for(int i=0; i < 8; i++){
-							System.out.print("P"+i+"  : "+processor.register.readReg(i)+"\t	");
+					for(int i=0; i < count; i++){
+						    String printreg = String.format("%-"+ 2 + "s", "P"+i+"  : "+processor.register.readReg(i)+"	");
+							System.out.print(printreg);
+							if ((i + 1) % 8 == 0) {
+								System.out.println();
+							}
 					}
-					System.out.print("\n");
-					for(int i=8; i < 16; i++){
-						System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
-					}			
-					System.out.print("\n");
-					//System.out.print("--------------------------------------------------BackendRAT---------------------------------------------------------------------------------------");
-					System.out.print("\n");
-					for(int i=16; i < 24; i++){
-						System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
-					}
-					System.out.print("\n");
-					for(int i=24; i < 32; i++){
-						System.out.print("P"+i+" : "+processor.register.readReg(i)+"\t	");
-					}
-					
 					System.out.println("X : "+processor.register.readReg(count)+"\n");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}else if(command.equalsIgnoreCase("mem")){
+				try{
 				int address1 = in.nextInt();
 				int address2 = in.nextInt();
 				System.out.print("----------------------------------------------Memory Locations from a1 to a2-------------------------------------------------------------------------------");
-				List<Long> _100Memory = processor.memory.readFirst100(address1,address2);
-				for(int i=0; i < 10; i++){
-					System.out.println();
-					for(int j=0; j < 10; j++){
-						System.out.print("Mem["+(i*10+j)+"]"+" : " + _100Memory.get(i*10+j)+"\t");
+				List<Long> _100Memory = processor.memory.readFirst100(address1,address2+1);
+				System.out.println();
+				for(int i=address1-1; i < address2; i++){
+					if(_100Memory.get(i)!=null){
+						String printreg = String.format("%-"+ 2 + "s", "Mem"+i+"  : "+ _100Memory.get(i)+"	");
+						System.out.print(printreg);
 					}
+					if ((i + 1) % 8 == 0) {
+						System.out.println();
+					}
+				}
+				}catch(Exception e){
+					
 				}
 				System.out.println("\n--------------------------------------------------------------------------------------------------------------------------------------------");
 
