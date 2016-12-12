@@ -14,7 +14,10 @@ public class ROBCommit implements ProcessListener{
 	public CycleListener pc;
 
 	CycleListener result;
-		
+	/**
+	 * Constructor for ROBCommit stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * @param processor a Processor object.
+	 */	
 	public ROBCommit(Processor processor) {
 		pc = new CycleListener(processor);
 		result = new CycleListener(processor);
@@ -22,6 +25,10 @@ public class ROBCommit implements ProcessListener{
 		processor.processListeners.add(this);
 	}
 
+	/**
+	 * ROBCommit process method check for the iscommit value and commits the value in the back end RAT
+	 *  and removes the entry from ROB 
+	 */
 	public void process() {
 		try {
 			instruction = null;

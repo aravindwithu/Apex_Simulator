@@ -12,10 +12,9 @@ public class MultiplicationFU implements ProcessListener{
 	public Instruction instruction;
 	public CycleListener pc;
 	public int mulCount;
-	//Latch pc;
 	CycleListener result;
 	/**
-	 * Constructor for BranchFU stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * Constructor for MultiplicationFU stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
 	public MultiplicationFU(Processor processor) {
@@ -26,9 +25,8 @@ public class MultiplicationFU implements ProcessListener{
 	}
 	
 	/**
-	 * BranchFU process method performs relevant control operations such as branching (BZ, BNZ, BAL, JUMP), and Halt
-	 * Control flow instructions: BZ, BNZ, JUMP, BAL, HALT. Instructions following a BZ, BNZ, JUMP and BAL instruction in the pipeline 
-	 * should be flushed on a taken branch. The zero flag (Z) is set only by arithmetic instructions in ALU. 
+	 * MultiplicationFU process method performs multiplication on source operands and write the result in a temp result
+	 * MultiplicationFU takes 3 cycles to perform the operation
 	 */
 	
 	public void process() {
@@ -44,9 +42,7 @@ public class MultiplicationFU implements ProcessListener{
 								&& !processor.iQ.readIQEntry(i).src1Stall
 								&& !processor.iQ.readIQEntry(i).src2Stall)
 							{
-								//processor.iQ.readIQEntry(i).inExecution = true;
-								tempIns = processor.iQ.readIQEntry(i);						    
-							    //processor.iQ.removeIQEntry(i);	
+								tempIns = processor.iQ.readIQEntry(i);	
 								IQInsAdd = i;
 							    break;
 							}else{
@@ -63,8 +59,6 @@ public class MultiplicationFU implements ProcessListener{
 					instruction = null;
 					return;
 				}
-							
-				//instruction = processor.decode.instruction;
 						
 				if(tempIns != null && tempIns.opCode.ordinal() == 2)
 				{
@@ -76,8 +70,6 @@ public class MultiplicationFU implements ProcessListener{
 					instruction = null;
 					return;
 				}	
-									
-				//	processor.decode.readSources();	
 				
 				if(instruction != null){				
 
@@ -87,7 +79,6 @@ public class MultiplicationFU implements ProcessListener{
 				}			
 			}
 			if(processor.multiplicationFU.mulCount == 2){
-				//mulResult = (int)(instruction.src1*instruction.src2); nned to check why instruction's values are not obtained
 				result.write(instruction.src1*instruction.src2);
 				instruction.destVal = instruction.src1*instruction.src2;
 				processor.multiplicationFU.mulCount++;

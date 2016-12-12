@@ -68,20 +68,6 @@ public class ALU2 implements ProcessListener{
 				result.write(instruction.src1 ^ instruction.src2);
 				instruction.destVal = instruction.src1 ^ instruction.src2;
 				break;
-				
-			/*case 8: //LOAD
-				if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
-					result.write(instruction.src1 + instruction.src2);
-				} else {								//LOAD rdest, rscr1, literal
-					result.write(instruction.src1 + instruction.literal);
-				}
-				break;
-			case 9: //Store
-				if(instruction.isLiteral){
-					result.write(instruction.src2 + instruction.literal);}
-				else {
-					result.write(instruction.src1 + instruction.src2);}
-				break;		*/
 			}
 			
 		   
@@ -90,11 +76,7 @@ public class ALU2 implements ProcessListener{
 		   }
 		   else if(processor.register.getZReg() != -1 && instruction.destVal != 0 && processor.register.getZReg() == instruction.dest){
 			   processor.register.setZFlag(instruction.dest.intValue(), 1);
-		   }	
-		   
-			/*if(result.temRread() == 0 && processor.isBranchZ){
-				processor.isZero = true;
-			}*/
+		   }
 		}
 	}
 

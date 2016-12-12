@@ -15,7 +15,7 @@ public class LSFU2 implements ProcessListener {
 	CycleListener result;
 	
 	/**
-	 * Constructor for Memory stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * Constructor for LSFU2 stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
 	public LSFU2(Processor processor) {
@@ -26,8 +26,8 @@ public class LSFU2 implements ProcessListener {
 	}
 
 	/**
-	 * MemoryStage process method performs the memory operations for LOAD and STORE.
-	 * fetches data from memory for LOAD and writes data to memory for STORE. 
+	 * LSFU2 process method performs the memory operations for LOAD and STORE.
+	 * fetches data from IQ for LOAD and STORE instructions.  
 	 */
 	public void process() {
 		try {			
@@ -87,7 +87,6 @@ public class LSFU2 implements ProcessListener {
 		}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
-			//Main.displayRegisters();
 		}
 	}
 

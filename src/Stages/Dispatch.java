@@ -23,7 +23,7 @@ public class Dispatch implements ProcessListener {
 	}
 
 	/** //false checkin ALU1
-	 * Decode process method performs relevant action for halt, stall and decodes the necessary instruction. 
+	 * Dispatch process method performs relevant action for halt, stall and adds the instruction to the IQ and ROB. 
 	 */
 	public void process() {
 	try {
@@ -75,11 +75,7 @@ public class Dispatch implements ProcessListener {
 					}
 					else{
 						instruction.src2 = null;
-					}
-					
-					/*if(instruction.opCode == Constants.OpCode.STORE && instruction.dest == null && !instruction.isLiteral){
-						instruction.dest = processor.register.readReg(instruction.destAdd.intValue());
-					}*/					
+					}				
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

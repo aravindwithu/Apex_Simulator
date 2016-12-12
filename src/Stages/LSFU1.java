@@ -15,7 +15,7 @@ public class LSFU1 implements ProcessListener {
 	CycleListener result;
 	
 	/**
-	 * Constructor for Memory stage initializes PC(instruction Address), result(like a latch which has results of the stage).
+	 * Constructor for LSFU1 stage initializes PC(instruction Address), result(like a latch which has results of the stage).
 	 * @param processor a Processor object.
 	 */
 	public LSFU1(Processor processor) {
@@ -26,8 +26,8 @@ public class LSFU1 implements ProcessListener {
 	}
 
 	/**
-	 * MemoryStage process method performs the memory operations for LOAD and STORE.
-	 * fetches data from memory for LOAD and writes data to memory for STORE. 
+	 * LSFU1 process method performs the memory operations for LOAD and STORE.
+	 * fetches data from IQ for LOAD and STORE instructions. 
 	 */
 	public void process() {
 		try {			
@@ -42,9 +42,7 @@ public class LSFU1 implements ProcessListener {
 							&& !processor.iQ.readIQEntry(i).src1Stall
 							&& !processor.iQ.readIQEntry(i).src2Stall)
 						{
-							//processor.iQ.readIQEntry(i).inExecution = true;
-							tempIns = processor.iQ.readIQEntry(i);						    
-						    //processor.iQ.removeIQEntry(i);	
+							tempIns = processor.iQ.readIQEntry(i);		
 							IQInsAdd = i;
 						    break;
 						}else{
@@ -61,8 +59,6 @@ public class LSFU1 implements ProcessListener {
 				instruction = null;
 				return;
 			}
-						
-			//instruction = processor.decode.instruction;
 		
 			if(tempIns != null && (tempIns.opCode.ordinal() == 8 || tempIns.opCode.ordinal() == 9))
 			{
@@ -95,69 +91,7 @@ public class LSFU1 implements ProcessListener {
 				}
 				break;
 			}
-				/*if(processor.iQ.instruction != null){
-					instruction = processor.decode.instruction;			
-					
-					if(instruction != null){
-						 if(instruction.src1Stall || instruction.src2Stall){
-							 instruction = null;
-								return;	
-						  }
-					}
-				}*/
-					/*pc.write(processor.decode.pc.read());
-
-					switch(instruction.opCode.ordinal()){
-						case 8:
-							if(instruction.literal == null){	//LOAD rdest, rscr1, rscr2
-								result.write(instruction.src1 + instruction.src2);
-							}else{								//LOAD rdest, rscr1, literal
-								result.write(instruction.src1 + instruction.literal);
-							}
-							break;
-						case 9:
-							if(instruction.isLiteral){
-								result.write(instruction.src2 + instruction.literal);
-							}else {
-								result.write(instruction.src1 + instruction.src2);
-							}
-							break;
-					}
-									
-						if(instruction.opCode == Constants.OpCode.STORE){
-							
-							if(instruction.isLiteral){
-								instruction.src1 = processor.register.readReg(instruction.src1Add.intValue());
-								processor.memory.writeMem(processor.lSFU.result.read().intValue(), instruction.src1);
-								}
-							else{
-								processor.memory.writeMem(processor.lSFU.result.read().intValue(), instruction.dest);
-							}
-							
-							
-						} else if(instruction.opCode == Constants.OpCode.LOAD){
-							result.write(processor.memory.readMem(processor.lSFU.result.read().intValue()));
-						} else {				
-							result.write(processor.lSFU.result.read());
-						}
-						
-					}
-			else if(processor.branchFU.instruction != null){
-				instruction = processor.branchFU.instruction;
-				pc.write(processor.branchFU.pc.read());
-			}
-			else if(processor.multiplicationFU.instruction != null && processor.mulResultFoundCheck==true){
-				instruction = processor.multiplicationFU.instruction;
-				result.write(MultiplicationFU.mulResult);
-				pc.write(processor.multiplicationFU.pc.read());
-				Processor.mulCount = 0;
-				processor.multiplicationFU.instruction = null;
-			}
-			else
-			{	
-				instruction = null;
-			}
-		*/	
+				
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());

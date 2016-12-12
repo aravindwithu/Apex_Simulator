@@ -43,10 +43,8 @@ public class ALU1 implements ProcessListener{
 							&& !processor.iQ.readIQEntry(i).src1Stall
 							&& !processor.iQ.readIQEntry(i).src2Stall)
 						{
-							//processor.iQ.readIQEntry(i).inExecution = true;
 							tempIns = processor.iQ.readIQEntry(i);						    
-						    //processor.iQ.removeIQEntry(i);	
-							IQInsAdd = i;
+						    IQInsAdd = i;
 						    break;
 						}else{
 							Processor.noIssueCount++;
@@ -62,9 +60,7 @@ public class ALU1 implements ProcessListener{
 				instruction = null;
 				return;
 			}
-						
-			//instruction = processor.decode.instruction;
-		
+			
 			if(tempIns != null && tempIns.opCode.ordinal() < 8 && tempIns.opCode.ordinal() != 2)
 			{
 				processor.iQ.readIQEntry(IQInsAdd).inExecution = true;
@@ -76,18 +72,6 @@ public class ALU1 implements ProcessListener{
 				return;
 			}
 			
-			
-			/*if(instruction != null){
-				 if(instruction.src1Stall || instruction.src2Stall){
-					 instruction = null;
-						return;	
-				  }
-			}*/
-					
-			//processor.decode.readSources();	
-			
-			//pc.write(processor.dispatch.pc.read());
-									
 			if(instruction != null){
 			
 				pc.write(instruction.insPc);

@@ -67,7 +67,6 @@ public class WriteBack implements ProcessListener{
 			if(instructionList.size() > 0){
 				for (Instruction instructionObj : instructionList) {
 					instruction = instructionObj;
-					//pc.write(instruction.insPc);
 					if(instruction != null){
 						if(instruction.opCode == Constants.OpCode.HALT){
 							processor.cL.cycle++;
